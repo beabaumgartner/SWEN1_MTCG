@@ -29,10 +29,6 @@ INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(2, 1, 1);
 INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(2, 4, 1);
 INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(2, 2, 2);
 
-Select * from Users;
-
-SELECT * FROM Users WHERE user_id = 1
-
 
 
 
