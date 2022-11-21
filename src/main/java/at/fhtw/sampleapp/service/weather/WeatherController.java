@@ -10,7 +10,8 @@ import at.fhtw.httpserver.server.Response;
 
 import java.util.List;
 
-public class WeatherController extends Controller {
+public class WeatherController extends Controller
+{
     private WeatherDAL weatherDAL;
 
     public WeatherController(WeatherDAL weatherDAL) {
