@@ -3,32 +3,38 @@
 -- create tables
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,
-    coins INT NOT NULL,
-    password VARCHAR(64) NOT NULL
+    username VARCHAR UNIQUE NOT NULL,
+    name VARCHAR DEFAULT NULL,
+    coins INT Default 20,
+    wins INT Default 0,
+    losses INT Default 0,
+    bio VARCHAR DEFAULT NULL,
+    image VARCHAR DEFAULT NULL,
+    password VARCHAR NOT NULL
 );
 
 CREATE TABLE Tokens (
     token_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    token VARCHAR(50) NOT NULL
+    token VARCHAR NOT NULL
 );
 
 CREATE TABLE Cards (
-    card_id SERIAL PRIMARY KEY,
+    card_id VARCHAR PRIMARY KEY,
+    card_name VARCHAR NOT NULL,
     damage INT NOT NULL,
-    category VARCHAR(1) NOT NULL,
-    element_type VARCHAR(1) NOT NULL
+    category VARCHAR NOT NULL,
+    element_type VARCHAR NOT NULL
 );
 
 CREATE TABLE Stack (
-    stack_id SERIAL PRIMARY KEY,
+    stack_id VARCHAR PRIMARY KEY,
     user_id INT NOT NULL
 );
 
 CREATE TABLE Stack_Cards (
-    stack_id INT NOT NULL,
-    card_id INT NOT NULL,
+    stack_id VARCHAR NOT NULL,
+    card_id VARCHAR NOT NULL,
     quantity INT NULL,
 
     PRIMARY KEY (stack_id, card_id)
@@ -41,17 +47,17 @@ CREATE TABLE Deck (
 
 CREATE TABLE Deck_Cards (
     deck_id INT NOT NULL,
-    card_id INT NOT NULL,
+    card_id VARCHAR NOT NULL,
     quantity INT NULL,
 
     PRIMARY KEY (deck_id, card_id)
 );
 
 CREATE TABLE Store (
-    store_id SERIAL PRIMARY KEY,
+    store_id VARCHAR PRIMARY KEY,
     user_id INT NOT NULL,
-    card_id INT NOT NULL,
-    requirements VARCHAR(50) NOT NULL
+    card_id VARCHAR NOT NULL,
+    requirements VARCHAR NOT NULL
 );
 
 -- alter tables

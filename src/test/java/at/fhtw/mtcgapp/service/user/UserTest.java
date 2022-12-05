@@ -1,6 +1,7 @@
 package at.fhtw.mtcgapp.service.user;
 
 import at.fhtw.mtcgapp.model.User;
+import at.fhtw.mtcgapp.model.UserCredentials;
 import at.fhtw.sampleapp.model.Weather;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,9 +24,8 @@ class UserTest {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         try {
-            User user = new ObjectMapper().readValue(bufferedReader.readLine(), User.class);
-            assertEquals(1, user.getId());
-            assertEquals("bea", user.getName());
+            UserCredentials user = new ObjectMapper().readValue(bufferedReader.readLine(), UserCredentials.class);
+            assertEquals("bea", user.getUsername());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -41,9 +41,8 @@ class UserTest {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         try {
-            User user = new ObjectMapper().readValue(bufferedReader.readLine(), User.class);
-            assertEquals(1, user.getId());
-            assertEquals("bea", user.getName());
+            UserCredentials user = new ObjectMapper().readValue(bufferedReader.readLine(), UserCredentials.class);
+            assertEquals("bea", user.getUsername());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

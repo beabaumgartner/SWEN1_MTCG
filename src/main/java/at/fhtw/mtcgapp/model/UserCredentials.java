@@ -2,36 +2,25 @@ package at.fhtw.mtcgapp.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-public class User {
-    @JsonAlias({"User_id"})
-    private Integer id;
+public class UserCredentials {
     @JsonAlias({"Username"})
     private String username;
     @JsonAlias({"Password"})
     private String password;
 
     // Jackson needs the default constructor
-    public User() {}
+    public UserCredentials() {}
 
-    public User(Integer id, String username, String password) {
-        this.id = id;
+    public UserCredentials(String username, String password) {
         this.username = username;
         this.password = password;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String name) {
+    public void setUsername(String username) {
         this.username = username;
     }
 

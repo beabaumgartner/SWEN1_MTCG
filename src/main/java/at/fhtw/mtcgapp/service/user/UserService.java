@@ -23,6 +23,8 @@ public class UserService implements Service {
             return this.userController.getUser(request.getPathParts().get(1));
         } else if (request.getMethod() == Method.POST) {
             return this.userController.addUser(request);
+        } else if (request.getMethod() == Method.PUT) {
+            return this.userController.addUser(request);
         }
 
         return new Response(

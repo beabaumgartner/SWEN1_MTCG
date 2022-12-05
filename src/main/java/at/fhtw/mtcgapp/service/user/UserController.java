@@ -4,8 +4,10 @@ import at.fhtw.httpserver.http.ContentType;
 import at.fhtw.httpserver.http.HttpStatus;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
+import at.fhtw.mtcgapp.controller.Controller;
 import at.fhtw.mtcgapp.model.User;
-import at.fhtw.sampleapp.controller.Controller;
+import at.fhtw.mtcgapp.model.UserCredentials;
+
 import at.fhtw.sampleapp.model.Weather;
 import at.fhtw.sampleapp.service.weather.WeatherDAL;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -71,22 +73,22 @@ public class UserController extends Controller {
         try {
 
             // request.getBody() => "{ \"id\": 4, \"city\": \"Graz\", ... }
-            User user = this.getObjectMapper().readValue(request.getBody(), User.class);
+            UserCredentials user = this.getObjectMapper().readValue(request.getBody(), UserCredentials.class);
             this.userDAL.addUser(user);
 
             return new Response(
                     HttpStatus.CREATED,
                     ContentType.JSON,
-                    "{ message: \"Success\" }"
+                    "User successfully created"
             );
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
         return new Response(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.CONFLICT,
                 ContentType.JSON,
-                "{ \"message\" : \"Internal Server Error\" }"
+                "User with same username already registered"
         );
     }
 }

@@ -1,7 +1,7 @@
-INSERT INTO Users (name, coins, password) VALUES('bea', 0, '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
-INSERT INTO Users (name, coins, password) VALUES('felix', 10, '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
+INSERT INTO Users (username, password) VALUES('bea08', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
+INSERT INTO Users (username, password) VALUES('flex', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 
-INSERT INTO Cards (damage, category, element_type) VALUES(32, 's', 'f');
+INSERT INTO Cards (card_id, damage, category, element_type) VALUES(32, 's', 'f');
 INSERT INTO Cards (damage, category, element_type) VALUES(50, 'm', 'w');
 INSERT INTO Cards (damage, category, element_type) VALUES(22, 'm', 'f');
 INSERT INTO Cards (damage, category, element_type) VALUES(30, 's', 'w');

@@ -24,7 +24,8 @@ public class Main {
         Router router = new Router();
         router.addService("/weather", new WeatherService());
         router.addService("/echo", new EchoService());
-        router.addService("/user", (Service) new UserService());
+        router.addService("/users", (Service) new UserService());
+
 
         return router;
     }
