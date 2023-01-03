@@ -25,6 +25,7 @@ public class RequestBuilderTest {
                 "{'id':1}");
 
         Request request = new RequestBuilder().buildRequest(reader);
+        //System.out.println(request.getBody());
         assertEquals("/echo/mehr", request.getPathname());
         assertEquals("/echo", request.getServiceRoute());
         assertEquals("mehr", request.getPathParts().get(1));
