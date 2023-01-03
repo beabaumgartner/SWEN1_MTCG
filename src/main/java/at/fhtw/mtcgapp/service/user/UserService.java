@@ -5,23 +5,29 @@ import at.fhtw.httpserver.http.HttpStatus;
 import at.fhtw.httpserver.http.Method;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
+import at.fhtw.httpserver.server.Service;
+import at.fhtw.mtcgapp.dal.UnitOfWork;
+import at.fhtw.mtcgapp.dal.repository.UserRepository;
 
-public class UserService {
+public class UserService implements Service {
     private final UserController userController;
 
     public UserService()
     {
-        this.userController = new UserController(new UserDAL());
+        this.userController = new UserController();
     }
-/*    @Override
+    @Override
     public Response handleRequest(Request request) {
         if (request.getMethod() == Method.GET &&
                 request.getPathParts().size() > 1) {
-            return this.weatherController.getWeather(request.getPathParts().get(1));
+            return this.userController.getUserDataByUsername(request);
         } else if (request.getMethod() == Method.GET) {
-            return this.weatherController.getWeather();
+            return this.userController.getUserDataByUsername(request);
         } else if (request.getMethod() == Method.POST) {
-            return this.weatherController.addWeather(request);
+            return this.userController.addUser(request);
+        } else if (request.getMethod() == Method.PUT &&
+                request.getPathParts().size() > 1) {
+            return this.userController.updateUser(request);
         }
 
         return new Response(
@@ -29,5 +35,5 @@ public class UserService {
                 ContentType.JSON,
                 "[]"
         );
-    }*/
+    }
 }

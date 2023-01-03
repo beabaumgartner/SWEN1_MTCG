@@ -13,6 +13,7 @@ public class RequestBuilder {
         String line = bufferedReader.readLine();
 
         if (line != null) {
+            //System.out.println(line);
             String[] splitFirstLine = line.split(" ");
 
             request.setMethod(getMethod(splitFirstLine[0]));
