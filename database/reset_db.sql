@@ -1,11 +1,15 @@
 DROP TABLE IF EXISTS Users CASCADE;
 DROP TABLE IF EXISTS Cards CASCADE;
+DROP TABLE IF EXISTS Package CASCADE;
+DROP TABLE IF EXISTS Package_Cards CASCADE;
 DROP TABLE IF EXISTS Stack CASCADE;
 DROP TABLE IF EXISTS Stack_Cards CASCADE;
 DROP TABLE IF EXISTS Deck CASCADE;
 DROP TABLE IF EXISTS Deck_Cards CASCADE;
-DROP TABLE IF EXISTS Store CASCADE;
+DROP TABLE IF EXISTS Trading CASCADE;
 DROP TABLE IF EXISTS Tokens CASCADE;
+
+-- CREATE DATABASE DB_MTCG;
 
 -- CREATE DATABASE DB_MTCG;
 
@@ -35,6 +39,17 @@ CREATE TABLE Cards (
                        category VARCHAR NOT NULL,
                        element_type VARCHAR NOT NULL
 );
+CREATE TABLE Package (
+                         package_id SERIAL PRIMARY KEY,
+                         user_id INT NULL
+);
+
+CREATE TABLE Package_Cards (
+                               package_id INTEGER NOT NULL,
+                               card_id VARCHAR NOT NULL,
+
+                               PRIMARY KEY (package_id, card_id)
+);
 
 CREATE TABLE Stack (
                        stack_id VARCHAR PRIMARY KEY,
@@ -44,7 +59,6 @@ CREATE TABLE Stack (
 CREATE TABLE Stack_Cards (
                              stack_id VARCHAR NOT NULL,
                              card_id VARCHAR NOT NULL,
-                             quantity INT NULL,
 
                              PRIMARY KEY (stack_id, card_id)
 );
@@ -57,19 +71,31 @@ CREATE TABLE Deck (
 CREATE TABLE Deck_Cards (
                             deck_id INT NOT NULL,
                             card_id VARCHAR NOT NULL,
-                            quantity INT NULL,
 
                             PRIMARY KEY (deck_id, card_id)
 );
 
-CREATE TABLE Store (
-                       store_id VARCHAR PRIMARY KEY,
-                       user_id INT NOT NULL,
-                       card_id VARCHAR NOT NULL,
-                       requirements VARCHAR NOT NULL
+CREATE TABLE Trading (
+                         store_id VARCHAR PRIMARY KEY,
+                         user_seller_id INT NOT NULL,
+                         user_buyer_id INT NULL,
+                         card_id VARCHAR NOT NULL,
+                         requirements VARCHAR NOT NULL
 );
 
 -- alter tables
+ALTER TABLE Package
+    ADD CONSTRAINT user_id_fk
+        FOREIGN KEY (user_id)
+            REFERENCES Users (user_id)
+            ON DELETE CASCADE;
+
+ALTER TABLE Package_Cards
+    ADD CONSTRAINT stack_id_fk
+        FOREIGN KEY (package_id)
+            REFERENCES Stack (stack_id)
+            ON DELETE CASCADE;
+
 ALTER TABLE Stack
     ADD CONSTRAINT user_id_fk
         FOREIGN KEY (user_id)
@@ -106,13 +132,19 @@ ALTER TABLE Deck_Cards
             REFERENCES Cards (card_id)
             ON DELETE CASCADE;
 
-ALTER TABLE Store
-    ADD CONSTRAINT user_id_fk
-        FOREIGN KEY (user_id)
+ALTER TABLE Trading
+    ADD CONSTRAINT user_seller_id_fk
+        FOREIGN KEY (user_seller_id)
             REFERENCES Users (user_id)
             ON DELETE CASCADE;
 
-ALTER TABLE Store
+ALTER TABLE Trading
+    ADD CONSTRAINT user_buyer_id_fk
+        FOREIGN KEY (user_buyer_id)
+            REFERENCES Users (user_id)
+            ON DELETE CASCADE;
+
+ALTER TABLE Trading
     ADD CONSTRAINT card_id_fk
         FOREIGN KEY (card_id)
             REFERENCES Cards (card_id)
@@ -123,4 +155,5 @@ ALTER TABLE Tokens
         FOREIGN KEY (user_id)
             REFERENCES Users (user_id)
             ON DELETE CASCADE;
+
 

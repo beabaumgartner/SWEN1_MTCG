@@ -1,33 +1,45 @@
 INSERT INTO Users (username, password) VALUES('bea08', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 INSERT INTO Users (username, password) VALUES('flex', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 
-INSERT INTO Cards (card_id, damage, category, element_type) VALUES(32, 's', 'f');
-INSERT INTO Cards (damage, category, element_type) VALUES(50, 'm', 'w');
-INSERT INTO Cards (damage, category, element_type) VALUES(22, 'm', 'f');
-INSERT INTO Cards (damage, category, element_type) VALUES(30, 's', 'w');
+INSERT INTO Cards (card_id, card_name, damage, category, element_type) VALUES('da', 'Wasserkobold',32, 's', 'f');
+INSERT INTO Cards (card_id, card_name, damage, category, element_type) VALUES('do', 'Hexe',50, 'm', 'w');
+INSERT INTO Cards (card_id, card_name, damage, category, element_type) VALUES('de', 'Hydra',22, 'm', 'f');
+INSERT INTO Cards (card_id, card_name, damage, category, element_type) VALUES('di', 'Kobold',30, 's', 'w');
 
 INSERT INTO Stack (user_id) VALUES(1);
 INSERT INTO Stack (user_id) VALUES(2);
 
-INSERT INTO Stack_Cards (stack_id, card_id, quantity) VALUES(1, 2, 1);
-INSERT INTO Stack_Cards (stack_id, card_id, quantity) VALUES(1, 3, 1);
-INSERT INTO Stack_Cards (stack_id, card_id, quantity) VALUES(1, 4, 1);
+INSERT INTO Stack_Cards (stack_id, card_id) VALUES(1, 2);
+INSERT INTO Stack_Cards (stack_id, card_id) VALUES(1, 3);
+INSERT INTO Stack_Cards (stack_id, card_id) VALUES(1, 4);
 -----------
-INSERT INTO Stack_Cards (stack_id, card_id, quantity) VALUES(2, 4, 1);
-INSERT INTO Stack_Cards (stack_id, card_id, quantity) VALUES(2, 2, 1);
-INSERT INTO Stack_Cards (stack_id, card_id, quantity) VALUES(2, 3, 2);
+INSERT INTO Stack_Cards (stack_id, card_id) VALUES(2, 4);
+INSERT INTO Stack_Cards (stack_id, card_id) VALUES(2, 2);
+INSERT INTO Stack_Cards (stack_id, card_id) VALUES(2, 3);
 
 
 INSERT INTO Deck (user_id) VALUES(1);
 INSERT INTO Deck (user_id) VALUES(2);
 
-INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(1, 1, 1);
-INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(1, 4, 1);
-INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(1, 3, 1);
+INSERT INTO Deck_Cards (deck_id, card_id) VALUES(1, 'do');
+INSERT INTO Deck_Cards (deck_id, card_id) VALUES(1, 'do');
+INSERT INTO Deck_Cards (deck_id, card_id) VALUES(1, 'do');
 -----------
-INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(2, 1, 1);
-INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(2, 4, 1);
-INSERT INTO Deck_Cards (deck_id, card_id, quantity) VALUES(2, 2, 2);
+INSERT INTO Deck_Cards (deck_id, card_id) VALUES(2, 'do');
+INSERT INTO Deck_Cards (deck_id, card_id) VALUES(2, 'do');
+INSERT INTO Deck_Cards (deck_id, card_id) VALUES(2, 'do');
+
+----------------------------------------------------------------------
+INSERT INTO Package (user_id) VALUES(NULL);
+INSERT INTO Package (user_id) VALUES(NULL);
+
+INSERT INTO Package_Cards (package_id, card_id) VALUES(1, 'do');
+INSERT INTO Package_Cards (package_id, card_id) VALUES(1, 'da');
+INSERT INTO Package_Cards (package_id, card_id) VALUES(1, 'di');
+-----------
+INSERT INTO Package_Cards (package_id, card_id) VALUES(2, 'de');
+INSERT INTO Package_Cards (package_id, card_id) VALUES(2, 'di');
+INSERT INTO Package_Cards (package_id, card_id) VALUES(2, 'da');
 
 UPDATE Users
 SET name = 'Felix Schuster',
@@ -41,3 +53,5 @@ Alter USER postgres with PASSWORD 'postgres';
 
 SELECT * FROM Tokens WHERE user_id = 1;
 SELECT * FROM Tokens JOIN Users ON Tokens.user_id = Users.user_id WHERE users.username = 'bea08' AND Tokens.token = 'bea08-mtcgToken'
+
+SELECT * FROM Cards JOIN Package_Cards ON Cards.card_id = Package_Cards.card_id JOIN Package ON Package.package_id = Package_Cards.package_id WHERE Package.package_id = 1;
