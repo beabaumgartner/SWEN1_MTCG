@@ -8,6 +8,7 @@ import at.fhtw.httpserver.http.HttpStatus;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class WeatherController extends Controller
@@ -78,6 +79,7 @@ public class WeatherController extends Controller
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
 
         return new Response(
             HttpStatus.INTERNAL_SERVER_ERROR,

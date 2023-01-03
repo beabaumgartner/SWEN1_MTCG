@@ -3,8 +3,6 @@ package at.fhtw.mtcgapp.model;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 public class UserStats {
-    @JsonAlias({"User_id"})
-    private Integer id;
     @JsonAlias({"Name"})
     private String name;
     @JsonAlias({"Elo"})
@@ -17,20 +15,11 @@ public class UserStats {
     // Jackson needs the default constructor
     public UserStats() {}
 
-    public UserStats(Integer id, String name, Integer wins, Integer losses) {
-        this.id = id;
+    public UserStats(String name, Integer wins, Integer losses) {
         this.name = name;
         this.wins = wins;
         this.losses = losses;
         this.elo = wins-losses;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
