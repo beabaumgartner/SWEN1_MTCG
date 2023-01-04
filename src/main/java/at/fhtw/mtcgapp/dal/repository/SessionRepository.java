@@ -2,12 +2,8 @@ package at.fhtw.mtcgapp.dal.repository;
 
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
-import at.fhtw.mtcgapp.exception.ConstraintViolationException;
-import at.fhtw.mtcgapp.exception.DataAccessException;
-import at.fhtw.mtcgapp.exception.DataUpdateException;
-import at.fhtw.mtcgapp.exception.InvalidLoginDataException;
+import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.model.UserCredentials;
-import at.fhtw.mtcgapp.model.UserData;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,7 +63,7 @@ public class SessionRepository {
         }
     }
 
-    public void checkIfTokenIsValid(String username, Request request)
+    public void checkIfTokenAndUsernameIsValid(String username, Request request)
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
@@ -84,7 +80,73 @@ public class SessionRepository {
             }
 
         } catch (SQLException e) {
+            throw new DataAccessException("Check User by token and username could not be executed", e);
+        }
+    }
+
+    public void checkIfTokenIsValid(Request request)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                SELECT * FROM Tokens WHERE token = ?
+                """))
+        {
+            preparedStatement.setString(1, request.getHeaderMap().getAuthorizationTokenHeader().substring(6));
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next() == false)
+            {
+                throw new InvalidLoginDataException("Authentication information is missing or invalid");
+            }
+
+        } catch (SQLException e) {
             throw new DataAccessException("Check User by token could not be executed", e);
+        }
+    }
+
+    public void checkIfTokenIsAdmin(Request request)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                SELECT * FROM Tokens WHERE Tokens.token = ?
+                """))
+        {
+            preparedStatement.setString(1, request.getHeaderMap().getAuthorizationTokenHeader().substring(6));
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(!(request.getHeaderMap().getAuthorizationTokenHeader().substring(6).startsWith("admin")))
+            {
+                throw new AccessRightsTooLowException("Provided user is not \"admin\"");
+            }
+            if(resultSet.next() == false)
+            {
+                throw new InvalidLoginDataException("Authentication information is missing or invalid");
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Check Admin by token could not be executed", e);
+        }
+    }
+
+    public Integer getUserIdByToken(Request request)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                SELECT * FROM Tokens WHERE token = ?
+                """))
+        {
+            preparedStatement.setString(1, request.getHeaderMap().getAuthorizationTokenHeader().substring(6));
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next() == false)
+            {
+                throw new InvalidLoginDataException("Invalid username/password provided");
+            }
+
+            return resultSet.getInt("user_id");
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Get User by username and password could not be executed", e);
         }
     }
 }

@@ -1,10 +1,10 @@
 INSERT INTO Users (username, password) VALUES('bea08', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 INSERT INTO Users (username, password) VALUES('flex', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 
-INSERT INTO Cards (card_id, card_name, damage, category, element_type) VALUES('da', 'Wasserkobold',32, 's', 'f');
-INSERT INTO Cards (card_id, card_name, damage, category, element_type) VALUES('do', 'Hexe',50, 'm', 'w');
-INSERT INTO Cards (card_id, card_name, damage, category, element_type) VALUES('de', 'Hydra',22, 'm', 'f');
-INSERT INTO Cards (card_id, card_name, damage, category, element_type) VALUES('di', 'Kobold',30, 's', 'w');
+INSERT INTO Cards (card_id, card_name, damage) VALUES('da', 'Wasserkobold',32);
+INSERT INTO Cards (card_id, card_name, damage) VALUES('do', 'Hexe',50);
+INSERT INTO Cards (card_id, card_name, damage) VALUES('de', 'Hydra',22);
+INSERT INTO Cards (card_id, card_name, damage) VALUES('di', 'Kobold',30);
 
 INSERT INTO Stack (user_id) VALUES(1);
 INSERT INTO Stack (user_id) VALUES(2);
@@ -47,6 +47,10 @@ SET name = 'Felix Schuster',
     image = ':)'
 WHERE username = 'flex';
 
+UPDATE Package
+SET user_id = '1'
+WHERE package_id = 1;
+
 SELECT name, bio, image from Users Where username = 'flex';
 
 Alter USER postgres with PASSWORD 'postgres';
@@ -55,3 +59,9 @@ SELECT * FROM Tokens WHERE user_id = 1;
 SELECT * FROM Tokens JOIN Users ON Tokens.user_id = Users.user_id WHERE users.username = 'bea08' AND Tokens.token = 'bea08-mtcgToken'
 
 SELECT * FROM Cards JOIN Package_Cards ON Cards.card_id = Package_Cards.card_id JOIN Package ON Package.package_id = Package_Cards.package_id WHERE Package.package_id = 1;
+
+INSERT INTO Package (package_id) VALUES(DEFAULT) RETURNING package_id;
+
+SELECT * FROM Package WHERE user_id IS NULL;
+
+SELECT * FROM Users WHERE user_id = 1

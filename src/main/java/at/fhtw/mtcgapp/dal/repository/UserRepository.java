@@ -46,7 +46,6 @@ public class UserRepository {
             }
             else
             {
-                System.out.println("exception data");
                 throw new DataAccessException("Create User could not be executed", e);
 
             }

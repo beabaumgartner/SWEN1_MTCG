@@ -22,9 +22,7 @@ CREATE TABLE Tokens (
 CREATE TABLE Cards (
     card_id VARCHAR PRIMARY KEY,
     card_name VARCHAR NOT NULL,
-    damage INT NOT NULL,
-    category VARCHAR NOT NULL,
-    element_type VARCHAR NOT NULL
+    damage INT NOT NULL
 );
 CREATE TABLE Package (
     package_id SERIAL PRIMARY KEY,
@@ -78,9 +76,9 @@ REFERENCES Users (user_id)
 ON DELETE CASCADE;
 
 ALTER TABLE Package_Cards
-ADD CONSTRAINT stack_id_fk
+ADD CONSTRAINT package_id_fk
 FOREIGN KEY (package_id)
-REFERENCES Stack (stack_id)
+REFERENCES Package (package_id)
 ON DELETE CASCADE;
 
 ALTER TABLE Stack

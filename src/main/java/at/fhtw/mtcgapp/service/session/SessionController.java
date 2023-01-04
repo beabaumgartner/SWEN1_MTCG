@@ -24,13 +24,6 @@ public class SessionController extends Controller {
         UnitOfWork unitOfWork = new UnitOfWork();
 
         try (unitOfWork) {
-            HeaderMap headermap = request.getHeaderMap();
-            System.out.println("headermap: " + headermap);
-            System.out.println("urlContent: " + request.getUrlContent());
-            System.out.println("Method: " + request.getMethod());
-            System.out.println("pathname: " + request.getPathname());
-            System.out.println("params: " + request.getParams());
-            System.out.println("body: " + request.getBody());
 
 
             UserCredentials user = this.getObjectMapper().readValue(request.getBody(), UserCredentials.class);

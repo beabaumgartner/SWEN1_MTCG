@@ -14,6 +14,9 @@ DROP TABLE IF EXISTS Tokens CASCADE;
 -- CREATE DATABASE DB_MTCG;
 
 -- create tables
+-- CREATE DATABASE DB_MTCG;
+
+-- create tables
 CREATE TABLE Users (
                        user_id SERIAL PRIMARY KEY,
                        username VARCHAR UNIQUE NOT NULL,
@@ -35,9 +38,7 @@ CREATE TABLE Tokens (
 CREATE TABLE Cards (
                        card_id VARCHAR PRIMARY KEY,
                        card_name VARCHAR NOT NULL,
-                       damage INT NOT NULL,
-                       category VARCHAR NOT NULL,
-                       element_type VARCHAR NOT NULL
+                       damage INT NOT NULL
 );
 CREATE TABLE Package (
                          package_id SERIAL PRIMARY KEY,
@@ -52,12 +53,12 @@ CREATE TABLE Package_Cards (
 );
 
 CREATE TABLE Stack (
-                       stack_id VARCHAR PRIMARY KEY,
+                       stack_id SERIAL PRIMARY KEY,
                        user_id INT NOT NULL
 );
 
 CREATE TABLE Stack_Cards (
-                             stack_id VARCHAR NOT NULL,
+                             stack_id INTEGER NOT NULL,
                              card_id VARCHAR NOT NULL,
 
                              PRIMARY KEY (stack_id, card_id)
@@ -76,7 +77,7 @@ CREATE TABLE Deck_Cards (
 );
 
 CREATE TABLE Trading (
-                         store_id VARCHAR PRIMARY KEY,
+                         trading_id SERIAL PRIMARY KEY,
                          user_seller_id INT NOT NULL,
                          user_buyer_id INT NULL,
                          card_id VARCHAR NOT NULL,
@@ -91,9 +92,9 @@ ALTER TABLE Package
             ON DELETE CASCADE;
 
 ALTER TABLE Package_Cards
-    ADD CONSTRAINT stack_id_fk
+    ADD CONSTRAINT package_id_fk
         FOREIGN KEY (package_id)
-            REFERENCES Stack (stack_id)
+            REFERENCES Package (package_id)
             ON DELETE CASCADE;
 
 ALTER TABLE Stack

@@ -13,8 +13,6 @@ import at.fhtw.mtcgapp.model.UserCredentials;
 import at.fhtw.mtcgapp.model.UserData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.util.Objects;
-
 public class UserController extends Controller {
 
     private UserDummyDAL userDAL;
@@ -80,7 +78,7 @@ public class UserController extends Controller {
         UnitOfWork unitOfWork = new UnitOfWork();
 
         try (unitOfWork) {
-            new SessionRepository(unitOfWork).checkIfTokenIsValid(request.getPathParts().get(1), request);
+            new SessionRepository(unitOfWork).checkIfTokenAndUsernameIsValid(request.getPathParts().get(1), request);
             unitOfWork.commitTransaction();
             UserData userData = new UserRepository(unitOfWork).getUserDataByUsername(request.getPathParts().get(1));
             unitOfWork.commitTransaction();
@@ -145,7 +143,7 @@ public class UserController extends Controller {
         UnitOfWork unitOfWork = new UnitOfWork();
         try (unitOfWork){
             UserData user = this.getObjectMapper().readValue(request.getBody(), UserData.class);
-            new SessionRepository(unitOfWork).checkIfTokenIsValid(request.getPathParts().get(1), request);
+            new SessionRepository(unitOfWork).checkIfTokenAndUsernameIsValid(request.getPathParts().get(1), request);
             unitOfWork.commitTransaction();
 
             new UserRepository(unitOfWork).updateUser(request.getPathParts().get(1), user);
