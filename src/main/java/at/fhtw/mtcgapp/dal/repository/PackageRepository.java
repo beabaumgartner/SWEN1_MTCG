@@ -24,20 +24,28 @@ public class PackageRepository {
 
     public void createPackage(Card cards[])
     {
+        System.out.println("bin hier 1");
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
                 INSERT INTO Package (package_id) VALUES(DEFAULT) RETURNING package_id;
                 """))
         {
+            System.out.println("bin hier 2");
             ResultSet resultSet = preparedStatement.executeQuery();
+            System.out.println("bin hier 3");
+
 
             resultSet.next();
             int package_id = resultSet.getInt(1);
+            System.out.println("bin hier 4");
 
             for (Card card : cards)
             {
-                createCardsForPackage(card);
-                createPackageCards(package_id, card.getCard_id());
+                System.out.println("bin hier 5");
+                System.out.println("card: " + card.getCard_id());
+                System.out.println("bin hier 6");
+                createCardsForPackage(card, package_id);
+                System.out.println("bin hier 7");
             }
 
 
@@ -46,7 +54,7 @@ public class PackageRepository {
         }
     }
 
-    public void createPackageCards(Integer package_id, String card_id)
+    /*public void createPackageCards(Integer package_id, String card_id)
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
@@ -60,18 +68,19 @@ public class PackageRepository {
         } catch (SQLException e) {
             throw new DataAccessException("Create Package could not be executed", e);
         }
-    }
+    }*/
 
-    public void createCardsForPackage(Card card)
+    public void createCardsForPackage(Card card, Integer package_id)
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                INSERT INTO Cards (card_id, card_name, damage) VALUES(?, ?, ?);
+                INSERT INTO Cards (card_id, card_name, damage, package_id) VALUES(?, ?, ?, ?);
                 """))
         {
             preparedStatement.setString(1, card.getCard_id());
             preparedStatement.setString(2, card.getName());
             preparedStatement.setInt(3, card.getDamage());
+            preparedStatement.setInt(4, package_id);
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
@@ -84,6 +93,4 @@ public class PackageRepository {
             }
         }
     }
-
-
 }

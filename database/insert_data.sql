@@ -1,7 +1,7 @@
 INSERT INTO Users (username, password) VALUES('bea08', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 INSERT INTO Users (username, password) VALUES('flex', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 
-INSERT INTO Cards (card_id, card_name, damage) VALUES('da', 'Wasserkobold',32);
+INSERT INTO Cards (card_id, card_name, damage, package_id) VALUES('da', 'Wasserkobold',32, 12);
 INSERT INTO Cards (card_id, card_name, damage) VALUES('do', 'Hexe',50);
 INSERT INTO Cards (card_id, card_name, damage) VALUES('de', 'Hydra',22);
 INSERT INTO Cards (card_id, card_name, damage) VALUES('di', 'Kobold',30);
@@ -74,3 +74,29 @@ SELECT * FROM Stack WHERE user_id = ?;
 SELECT Cards.card_id, Cards.card_name, Cards.damage, Stack.user_id FROM Cards JOIN Stack_Cards ON Cards.card_id = Stack_Cards.card_id JOIN Stack ON Stack.stack_id = Stack_Cards.stack_id WHERE Stack.user_id = 1;
 
 SELECT * FROM Package WHERE user_id IS NULL LIMIT 1;
+
+
+INSERT INTO Package (package_id) VALUES(DEFAULT) RETURNING package_id;
+
+SELECT Cards.card_id, Cards.card_name, Cards.damage FROM Cards
+JOIN Package_Cards
+ON Cards.card_id = Package_Cards.card_id
+JOIN Package
+ON Package.package_id = Package_Cards.package_id
+WHERE Package.package_id = ?;
+
+SELECT Cards.card_id, Cards.card_name, Cards.damage FROM Cards
+JOIN Package
+ON Cards.package_id = Package.package_id
+WHERE Cards.package_id = 15;
+
+
+
+SELECT Cards.card_id, Cards.card_name, Cards.damage, Stack.user_id FROM Cards
+    JOIN Stack_Cards
+    ON Cards.card_id = Stack_Cards.card_id
+    JOIN Stack
+    ON Stack.stack_id = Stack_Cards.stack_id
+WHERE Stack.user_id = ?;
+
+SELECT Cards.card_id, Cards.card_name, Cards.damage From Cards WHERE user_id = 1;

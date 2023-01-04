@@ -29,7 +29,7 @@ public class TransactionPackageRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                SELECT * FROM Package WHERE user_id IS NULL LIMIT 1;
+                SELECT * FROM Cards WHERE user_id IS NULL LIMIT 1;
                 """))
         {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -50,13 +50,11 @@ public class TransactionPackageRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                    SELECT Cards.card_id, Cards.card_name, Cards.damage FROM Cards 
-                            JOIN Package_Cards 
-                                ON Cards.card_id = Package_Cards.card_id 
-                            JOIN Package 
-                                ON Package.package_id = Package_Cards.package_id 
-                            WHERE Package.package_id = ?;
-                """))
+                         SELECT Cards.card_id, Cards.card_name, Cards.damage FROM Cards
+                               JOIN Package
+                               ON Cards.package_id = Package.package_id
+                               WHERE Cards.package_id = ?;
+                             """))
         {
             preparedStatement.setInt(1, package_id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -87,7 +85,7 @@ public class TransactionPackageRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                          UPDATE Package
+                          UPDATE Cards
                           SET user_id = ?
                           WHERE package_id = ?;
                              """))

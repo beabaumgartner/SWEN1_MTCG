@@ -32,10 +32,6 @@ CREATE TABLE Package (
     package_id SERIAL PRIMARY KEY
 );
 
-CREATE TABLE Stack (
-    stack_id SERIAL PRIMARY KEY
-);
-
 CREATE TABLE Deck (
     deck_id SERIAL PRIMARY KEY
 );
@@ -53,12 +49,6 @@ ALTER TABLE Cards
 ADD CONSTRAINT package_id_fk
 FOREIGN KEY (package_id)
 REFERENCES Package (package_id)
-ON DELETE CASCADE;
-
-ALTER TABLE Cards
-ADD CONSTRAINT stack_id_fk
-FOREIGN KEY (stack_id)
-REFERENCES Stack (stack_id)
 ON DELETE CASCADE;
 
 ALTER TABLE Cards

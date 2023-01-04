@@ -8,7 +8,6 @@ import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.controller.Controller;
 import at.fhtw.mtcgapp.dal.repository.PackageRepository;
 import at.fhtw.mtcgapp.dal.repository.SessionRepository;
-import at.fhtw.mtcgapp.dal.repository.StackRepository;
 import at.fhtw.mtcgapp.dal.repository.TransactionPackageRepository;
 import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.model.Card;
@@ -98,19 +97,15 @@ public class PackageController extends Controller{
             new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
 
             int package_id = new TransactionPackageRepository(unitOfWork).choosePackage();
+            System.out.println("packageid: " + package_id);
             int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
+            System.out.println("user_id: " + user_id);
 
             //acquire package
             new TransactionPackageRepository(unitOfWork).acquireCardPackage(package_id, user_id);
+            System.out.println("im controller1");
             new TransactionPackageRepository(unitOfWork).updateCoinsByUserId(user_id);
-
-            //update users Stack
-            Collection<Card> cardsInPackage = new TransactionPackageRepository(unitOfWork).getCardsFromPackage(package_id);
-            int stack_id = new StackRepository(unitOfWork).getStackIdByUserId(user_id);
-            for (Card card : cardsInPackage)
-            {
-                new StackRepository(unitOfWork).createStackCards(stack_id, card.getCard_id());
-            }
+            System.out.println("im controller2");
 
             unitOfWork.commitTransaction();
 

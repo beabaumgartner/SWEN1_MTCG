@@ -27,12 +27,7 @@ public class CardRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                SELECT Cards.card_id, Cards.card_name, Cards.damage, Stack.user_id FROM Cards 
-                        JOIN Stack_Cards 
-                            ON Cards.card_id = Stack_Cards.card_id 
-                        JOIN Stack 
-                            ON Stack.stack_id = Stack_Cards.stack_id 
-                        WHERE Stack.user_id = ?;
+                       SELECT card_id, card_name, damage From Cards WHERE user_id = ?;
                 """))
         {
             preparedStatement.setInt(1, user_id);
