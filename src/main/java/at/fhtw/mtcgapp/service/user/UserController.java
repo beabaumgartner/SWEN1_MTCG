@@ -104,7 +104,7 @@ public class UserController extends Controller {
             return new Response(
                     HttpStatus.NOT_FOUND,
                     ContentType.PLAIN_TEXT,
-                    "User not found or no userdata."
+                    "User not found."
             );
         }
         catch (InvalidLoginDataException e)

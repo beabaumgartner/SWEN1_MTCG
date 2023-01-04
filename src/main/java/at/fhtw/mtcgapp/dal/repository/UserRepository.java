@@ -103,6 +103,5 @@ public class UserRepository {
             throw new DataAccessException("Update could not be executed", e);
         }
     }
-
 }
 
