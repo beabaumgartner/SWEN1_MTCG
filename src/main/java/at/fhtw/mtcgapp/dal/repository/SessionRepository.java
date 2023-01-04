@@ -70,7 +70,7 @@ public class SessionRepository {
                 SELECT * FROM Tokens JOIN Users ON Tokens.user_id = Users.user_id WHERE users.username = ? AND Tokens.token = ?
                 """))
         {
-            if(request.getHeaderMap().getAuthorizationTokenHeader().isEmpty() || request.getHeaderMap().getAuthorizationTokenHeader().isEmpty())
+            if(request.getHeaderMap().getAuthorizationTokenHeader() == null || request.getHeaderMap().getAuthorizationTokenHeader().isEmpty())
             {
                 throw new InvalidLoginDataException("Invalid username/password provided");
             }
@@ -96,7 +96,7 @@ public class SessionRepository {
                 SELECT * FROM Tokens WHERE token = ?
                 """))
         {
-            if(request.getHeaderMap().getAuthorizationTokenHeader().isEmpty() || request.getHeaderMap().getAuthorizationTokenHeader().isEmpty())
+            if(request.getHeaderMap().getAuthorizationTokenHeader() == null || request.getHeaderMap().getAuthorizationTokenHeader().isEmpty())
             {
                 throw new InvalidLoginDataException("Invalid username/password provided");
             }
@@ -121,7 +121,7 @@ public class SessionRepository {
                 SELECT * FROM Tokens WHERE Tokens.token = ?
                 """))
         {
-            if(request.getHeaderMap().getAuthorizationTokenHeader().isEmpty() || request.getHeaderMap().getAuthorizationTokenHeader().isEmpty())
+            if(request.getHeaderMap().getAuthorizationTokenHeader() == null || request.getHeaderMap().getAuthorizationTokenHeader().isEmpty())
             {
                 throw new InvalidLoginDataException("Invalid username/password provided");
             }
@@ -150,7 +150,7 @@ public class SessionRepository {
                 SELECT * FROM Tokens WHERE token = ?
                 """))
         {
-            if(request.getHeaderMap().getAuthorizationTokenHeader().isEmpty() || request.getHeaderMap().getAuthorizationTokenHeader().isEmpty())
+            if(request.getHeaderMap().getAuthorizationTokenHeader() == null || request.getHeaderMap().getAuthorizationTokenHeader().isEmpty())
             {
                 throw new InvalidLoginDataException("Invalid username/password provided");
             }
