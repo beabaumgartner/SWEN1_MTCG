@@ -8,9 +8,13 @@ import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.controller.Controller;
 import at.fhtw.mtcgapp.dal.repository.PackageRepository;
 import at.fhtw.mtcgapp.dal.repository.SessionRepository;
+import at.fhtw.mtcgapp.dal.repository.StackRepository;
+import at.fhtw.mtcgapp.dal.repository.TransactionPackageRepository;
 import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.model.Card;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.util.Collection;
 
 
 public class PackageController extends Controller{
@@ -61,7 +65,7 @@ public class PackageController extends Controller{
         {
             unitOfWork.rollbackTransaction();
             return new Response(
-                    HttpStatus.CONFLICT,
+                    HttpStatus.FORBIDDEN,
                     ContentType.PLAIN_TEXT,
                     "Provided user is not \"admin\""
             );
@@ -93,17 +97,25 @@ public class PackageController extends Controller{
         try (unitOfWork) {
             new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
 
-            int package_id = new PackageRepository(unitOfWork).choosePackage();
+            int package_id = new TransactionPackageRepository(unitOfWork).choosePackage();
             int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
 
-            new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
-            new PackageRepository(unitOfWork).acquireCardPackage(package_id, user_id);
-            new PackageRepository(unitOfWork).UpdateCoinsByUserId(user_id);
+            //acquire package
+            new TransactionPackageRepository(unitOfWork).acquireCardPackage(package_id, user_id);
+            new TransactionPackageRepository(unitOfWork).updateCoinsByUserId(user_id);
+
+            //update users Stack
+            Collection<Card> cardsInPackage = new TransactionPackageRepository(unitOfWork).getCardsFromPackage(package_id);
+            int stack_id = new StackRepository(unitOfWork).getStackIdByUserId(user_id);
+            for (Card card : cardsInPackage)
+            {
+                new StackRepository(unitOfWork).createStackCards(stack_id, card.getCard_id());
+            }
 
             unitOfWork.commitTransaction();
 
             return  new Response(
-                    HttpStatus.CREATED,
+                    HttpStatus.OK,
                     ContentType.PLAIN_TEXT,
                     "A package has been successfully bought"
             );
@@ -129,7 +141,7 @@ public class PackageController extends Controller{
         {
             unitOfWork.rollbackTransaction();
             return new Response(
-                    HttpStatus.CONFLICT,
+                    HttpStatus.NOT_FOUND,
                     ContentType.PLAIN_TEXT,
                     "No card package available for buying"
             );
@@ -147,7 +159,7 @@ public class PackageController extends Controller{
         {
             unitOfWork.rollbackTransaction();
             return new Response(
-                    HttpStatus.CONFLICT,
+                    HttpStatus.FORBIDDEN,
                     ContentType.PLAIN_TEXT,
                     "Not enough money for buying a card package"
             );

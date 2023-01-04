@@ -3,6 +3,7 @@ package at.fhtw;
 import at.fhtw.httpserver.server.Service;
 import at.fhtw.httpserver.utils.Router;
 import at.fhtw.httpserver.server.Server;
+import at.fhtw.mtcgapp.service.cards.CardService;
 import at.fhtw.mtcgapp.service.packages.PackageService;
 import at.fhtw.mtcgapp.service.session.SessionService;
 import at.fhtw.mtcgapp.service.user.UserService;
@@ -30,6 +31,7 @@ public class Main {
         router.addService("/sessions", new SessionService());
         router.addService("/packages", new PackageService());
         router.addService("/transactions", new PackageService());
+        router.addService("/cards", new CardService());
 
 
         return router;

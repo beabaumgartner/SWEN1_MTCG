@@ -65,3 +65,12 @@ INSERT INTO Package (package_id) VALUES(DEFAULT) RETURNING package_id;
 SELECT * FROM Package WHERE user_id IS NULL;
 
 SELECT * FROM Users WHERE user_id = 1
+
+SELECT * FROM Card WHERE user_id
+
+    getStackIdByUserId
+SELECT * FROM Stack WHERE user_id = ?;
+
+SELECT Cards.card_id, Cards.card_name, Cards.damage, Stack.user_id FROM Cards JOIN Stack_Cards ON Cards.card_id = Stack_Cards.card_id JOIN Stack ON Stack.stack_id = Stack_Cards.stack_id WHERE Stack.user_id = 1;
+
+SELECT * FROM Package WHERE user_id IS NULL LIMIT 1;
