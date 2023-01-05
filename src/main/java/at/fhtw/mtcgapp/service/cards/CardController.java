@@ -51,7 +51,7 @@ public class CardController extends Controller {
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
-                    "Invalid username/password provided"
+                    "Authentication information is missing or invalid"
             );
         }
         catch (NoDataException e)

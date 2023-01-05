@@ -24,28 +24,21 @@ public class PackageRepository {
 
     public void createPackage(Card cards[])
     {
-        System.out.println("bin hier 1");
+
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
                 INSERT INTO Package (package_id) VALUES(DEFAULT) RETURNING package_id;
                 """))
         {
-            System.out.println("bin hier 2");
             ResultSet resultSet = preparedStatement.executeQuery();
-            System.out.println("bin hier 3");
 
 
             resultSet.next();
             int package_id = resultSet.getInt(1);
-            System.out.println("bin hier 4");
 
             for (Card card : cards)
             {
-                System.out.println("bin hier 5");
-                System.out.println("card: " + card.getCard_id());
-                System.out.println("bin hier 6");
                 createCardsForPackage(card, package_id);
-                System.out.println("bin hier 7");
             }
 
 
