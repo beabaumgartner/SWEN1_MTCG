@@ -4,7 +4,7 @@ import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.exception.DataAccessException;
 import at.fhtw.mtcgapp.exception.DataUpdateException;
 import at.fhtw.mtcgapp.exception.NoDataException;
-import at.fhtw.mtcgapp.exception.NotEnoughItemsException;
+import at.fhtw.mtcgapp.exception.InvalidItemException;
 import at.fhtw.mtcgapp.model.Card;
 
 import java.sql.PreparedStatement;
@@ -117,7 +117,7 @@ public class TransactionPackageRepository {
 
             if(coins < 1)
             {
-                throw new NotEnoughItemsException("Not enough money for buying a card package");
+                throw new InvalidItemException("Not enough money for buying a card package");
             }
 
             preparedStatement.setInt(1, (coins - 5));

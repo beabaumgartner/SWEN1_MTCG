@@ -6,7 +6,6 @@ import at.fhtw.httpserver.http.Method;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.httpserver.server.Service;
-import at.fhtw.mtcgapp.service.packages.PackageController;
 
 public class DeckService implements Service {
     private final DeckController deckController;
@@ -17,8 +16,14 @@ public class DeckService implements Service {
     }
     @Override
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.GET) {
-            //return this.deckController.acquireCardPackage(request);
+        if (request.getMethod() == Method.PUT) {
+            return this.deckController.configureDeckCardsFromUser(request);
+        }
+        else if (request.getMethod() == Method.GET && (request.getParams() == null || request.getParams().equals("format=json"))) {
+            return this.deckController.getDeckCardsFromUserJSON(request);
+        }
+        else if (request.getMethod() == Method.GET && request.getParams().equals("format=plain")) {
+            return this.deckController.getDeckCardsFromUserPLAIN(request);
         }
 
         return new Response(

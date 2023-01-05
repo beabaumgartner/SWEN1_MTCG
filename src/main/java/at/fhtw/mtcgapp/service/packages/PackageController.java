@@ -13,8 +13,6 @@ import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.model.Card;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.util.Collection;
-
 
 public class PackageController extends Controller{
     public Response createPackage(Request request) {
@@ -97,15 +95,11 @@ public class PackageController extends Controller{
             new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
 
             int package_id = new TransactionPackageRepository(unitOfWork).choosePackage();
-            System.out.println("packageid: " + package_id);
             int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
-            System.out.println("user_id: " + user_id);
 
             //acquire package
             new TransactionPackageRepository(unitOfWork).acquireCardPackage(package_id, user_id);
-            System.out.println("im controller1");
             new TransactionPackageRepository(unitOfWork).updateCoinsByUserId(user_id);
-            System.out.println("im controller2");
 
             unitOfWork.commitTransaction();
 
@@ -150,7 +144,7 @@ public class PackageController extends Controller{
                     "Update data was not successfully"
             );
         }
-        catch (NotEnoughItemsException e)
+        catch (InvalidItemException e)
         {
             unitOfWork.rollbackTransaction();
             return new Response(

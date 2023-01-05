@@ -54,4 +54,32 @@ public class CardRepository {
             throw new DataAccessException("Create Package could not be executed", e);
         }
     }
+
+    public Collection<Card> getAllDeckCardsFromUser(Integer user_id)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                       SELECT card_id, card_name, damage From Cards WHERE user_id = ? AND deck_id IS NOT NULL;
+                """))
+        {
+            preparedStatement.setInt(1, user_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Collection<Card> userCards = new ArrayList<>();
+
+            while(resultSet.next())
+            {
+                Card card = new Card(
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getInt(3));
+                userCards.add(card);
+            }
+
+            return userCards;
+
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Create Package could not be executed", e);
+        }
+    }
 }

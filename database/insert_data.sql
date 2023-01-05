@@ -100,3 +100,17 @@ SELECT Cards.card_id, Cards.card_name, Cards.damage, Stack.user_id FROM Cards
 WHERE Stack.user_id = ?;
 
 SELECT Cards.card_id, Cards.card_name, Cards.damage From Cards WHERE user_id = 1;
+
+SELECT card_id, card_name, damage From Cards WHERE user_id = 1 AND deck_id IS NOT NULL;
+
+INSERT INTO Deck (deck_id) VALUES(DEFAULT) RETURNING deck_id;
+
+SELECT * From Cards WHERE user_id = 1 AND deck_id < 4;
+card_id, card_name, damage
+
+SELECT * From Cards WHERE user_id = 1 AND deck_id IS NOT NULL;
+
+UPDATE Cards
+SET deck_id = NULL
+WHERE user_id = ?
+  AND deck_id != 4;
