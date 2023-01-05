@@ -18,10 +18,7 @@ public class UserService implements Service {
     }
     @Override
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.GET &&
-                request.getPathParts().size() > 1) {
-            return this.userController.getUserDataByUsername(request);
-        } else if (request.getMethod() == Method.GET) {
+        if (request.getMethod() == Method.GET) {
             return this.userController.getUserDataByUsername(request);
         } else if (request.getMethod() == Method.POST) {
             return this.userController.addUser(request);

@@ -5,8 +5,12 @@ import at.fhtw.httpserver.utils.Router;
 import at.fhtw.httpserver.server.Server;
 import at.fhtw.mtcgapp.service.cards.CardService;
 import at.fhtw.mtcgapp.service.deck.DeckService;
+import at.fhtw.mtcgapp.service.game.battles.BattlesService;
+import at.fhtw.mtcgapp.service.game.scoreboard.ScoreboardService;
+import at.fhtw.mtcgapp.service.game.stats.StatsService;
 import at.fhtw.mtcgapp.service.packages.PackageService;
 import at.fhtw.mtcgapp.service.session.SessionService;
+import at.fhtw.mtcgapp.service.trading.TradingService;
 import at.fhtw.mtcgapp.service.user.UserService;
 import at.fhtw.sampleapp.service.echo.EchoService;
 import at.fhtw.sampleapp.service.weather.WeatherService;
@@ -34,6 +38,10 @@ public class Main {
         router.addService("/transactions", new PackageService());
         router.addService("/cards", new CardService());
         router.addService("/deck", new DeckService());
+        router.addService("/stats", new StatsService());
+        router.addService("/score", new ScoreboardService());
+        router.addService("/battles", new BattlesService());
+        router.addService("/tradings", new TradingService());
 
 
         return router;

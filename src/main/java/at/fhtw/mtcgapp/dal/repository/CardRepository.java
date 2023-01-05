@@ -34,10 +34,6 @@ public class CardRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
             Collection<Card> userCards = new ArrayList<>();
 
-            if(!resultSet.next())
-            {
-                throw new NoDataException("The request was fine, but the user doesn't have any cards");
-            }
             while(resultSet.next())
             {
                 Card card = new Card(
@@ -45,6 +41,11 @@ public class CardRepository {
                         resultSet.getString(2),
                         resultSet.getInt(3));
                 userCards.add(card);
+            }
+
+            if(userCards.isEmpty())
+            {
+                throw new NoDataException("The request was fine, but the user doesn't have any cards");
             }
 
             return userCards;
@@ -73,6 +74,11 @@ public class CardRepository {
                         resultSet.getString(2),
                         resultSet.getInt(3));
                 userCards.add(card);
+            }
+
+            if(userCards.isEmpty())
+            {
+                throw new NoDataException("The request was fine, but the deck doesn't have any cards");
             }
 
             return userCards;

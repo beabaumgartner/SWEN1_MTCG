@@ -13,6 +13,7 @@ CREATE TABLE Users (
                        user_id SERIAL PRIMARY KEY,
                        username VARCHAR UNIQUE NOT NULL,
                        name VARCHAR DEFAULT NULL,
+                       elo INT DEFAULT 100,
                        coins INT Default 20,
                        wins INT Default 0,
                        losses INT Default 0,
@@ -33,6 +34,7 @@ CREATE TABLE Cards (
                        deck_id INT NULL,
                        package_id INT NULL,
                        stack_id INT NULL,
+                       trading_id VARCHAR NULL,
                        card_name VARCHAR NOT NULL,
                        damage INT NOT NULL
 );
@@ -45,11 +47,9 @@ CREATE TABLE Deck (
 );
 
 CREATE TABLE Trading (
-                         trading_id SERIAL PRIMARY KEY,
-                         user_seller_id INT NOT NULL,
-                         user_buyer_id INT NULL,
-                         card_id VARCHAR NOT NULL,
-                         requirements VARCHAR NOT NULL
+                         trading_id VARCHAR PRIMARY KEY,
+                         type_card VARCHAR NOT NULL,
+                         minimum_damage INT NOT NULL
 );
 
 -- alter tables
@@ -71,22 +71,10 @@ ALTER TABLE Cards
             REFERENCES Users (user_id)
             ON DELETE CASCADE;
 
-ALTER TABLE Trading
-    ADD CONSTRAINT user_seller_id_fk
-        FOREIGN KEY (user_seller_id)
-            REFERENCES Users (user_id)
-            ON DELETE CASCADE;
-
-ALTER TABLE Trading
-    ADD CONSTRAINT user_buyer_id_fk
-        FOREIGN KEY (user_buyer_id)
-            REFERENCES Users (user_id)
-            ON DELETE CASCADE;
-
-ALTER TABLE Trading
-    ADD CONSTRAINT card_id_fk
-        FOREIGN KEY (card_id)
-            REFERENCES Cards (card_id)
+ALTER TABLE Cards
+    ADD CONSTRAINT trading_id_fk
+        FOREIGN KEY (trading_id)
+            REFERENCES Trading (trading_id)
             ON DELETE CASCADE;
 
 ALTER TABLE Tokens

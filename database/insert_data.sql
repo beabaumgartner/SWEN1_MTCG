@@ -114,3 +114,28 @@ UPDATE Cards
 SET deck_id = NULL
 WHERE user_id = ?
   AND deck_id != 4;
+
+
+SELECT * FROM Users ORDER BY elo DESC;
+
+
+UPDATE Users
+SET elo = '80'
+WHERE user_id = 1;
+
+INSERT INTO Trading (trading_id, type_card, minimum_damage) VALUES (4, 'f', 12);
+
+UPDATE Cards
+SET trading_id = 4
+WHERE user_id = 1 AND card_id = '1d3f175b-c067-4359-989d-96562bfa382c'AND deck_id IS NULL AND trading_id IS NULL;
+
+SELECT Cards.trading_id, Cards.card_id, Trading.type_card, Trading.minimum_damage
+FROM Trading JOIN Cards
+ON Trading.trading_id = Cards.trading_id;
+
+UPDATE Cards
+SET trading_id = NULL
+WHERE user_id = 1 AND card_id = '91a6471b-1426-43f6-ad65-6fc473e16f9f';
+
+DELETE FROM Trading
+WHERE trading_id = '336cd85277-4590-49d4-b0cf-ba0a921faad0';

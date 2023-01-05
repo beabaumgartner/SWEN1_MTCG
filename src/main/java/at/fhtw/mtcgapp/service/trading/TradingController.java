@@ -1,4 +1,4 @@
-package at.fhtw.mtcgapp.service.deck;
+package at.fhtw.mtcgapp.service.trading;
 
 import at.fhtw.httpserver.http.ContentType;
 import at.fhtw.httpserver.http.HttpStatus;
@@ -6,33 +6,33 @@ import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.mtcgapp.controller.Controller;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
-import at.fhtw.mtcgapp.dal.repository.CardRepository;
-import at.fhtw.mtcgapp.dal.repository.DeckRepository;
 import at.fhtw.mtcgapp.dal.repository.SessionRepository;
+import at.fhtw.mtcgapp.dal.repository.TradingRepository;
 import at.fhtw.mtcgapp.exception.*;
-import at.fhtw.mtcgapp.model.Card;
+import at.fhtw.mtcgapp.model.TradingDeal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Collection;
 
-public class DeckController extends Controller {
-    public Response getDeckCardsFromUserJSON(Request request) {
+public class TradingController extends Controller {
+
+    public Response createTradingDeal(Request request) {
         UnitOfWork unitOfWork = new UnitOfWork();
 
         try (unitOfWork) {
+
             new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
             int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
+            TradingDeal tradingDeal = this.getObjectMapper().readValue(request.getBody(), TradingDeal.class);
 
-            Collection<Card> userCards = new CardRepository(unitOfWork).getAllDeckCardsFromUser(user_id);
-
+            new TradingRepository(unitOfWork).creatTradingDeal(tradingDeal);
+            new TradingRepository(unitOfWork).updateCardForTradingDeal(tradingDeal, user_id);
             unitOfWork.commitTransaction();
 
-            String userCardsJSON = this.getObjectMapper().writeValueAsString(userCards);
-
             return  new Response(
-                    HttpStatus.OK,
-                    ContentType.JSON,
-                    userCardsJSON
+                    HttpStatus.CREATED,
+                    ContentType.PLAIN_TEXT,
+                    "Trading deal successfully created"
             );
         }
         catch (JsonProcessingException exception) {
@@ -49,17 +49,27 @@ public class DeckController extends Controller {
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
-                    "Invalid username/password provided"
+                    "Authentication information is missing or invalid"
             );
         }
-        catch (NoDataException e)
+        catch (ConstraintViolationException e)
         {
             unitOfWork.rollbackTransaction();
             e.printStackTrace();
             return new Response(
-                    HttpStatus.BAD_REQUEST,
+                    HttpStatus.CONFLICT,
                     ContentType.PLAIN_TEXT,
-                    "The request was fine, but the user doesn't have any cards"
+                    "A deal with this deal ID already exists."
+            );
+        }
+        catch (InvalidItemException e)
+        {
+            unitOfWork.rollbackTransaction();
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.FORBIDDEN,
+                    ContentType.PLAIN_TEXT,
+                    "The deal contains a card that is not owned by the user or locked in the deck."
             );
         }
         catch (DataAccessException e)
@@ -83,106 +93,23 @@ public class DeckController extends Controller {
         }
     }
 
-    public Response getDeckCardsFromUserPLAIN(Request request) {
+    public Response getTradingDeals(Request request) {
         UnitOfWork unitOfWork = new UnitOfWork();
 
         try (unitOfWork) {
 
             new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
-            int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
-
-            Collection<Card> userCards = new CardRepository(unitOfWork).getAllDeckCardsFromUser(user_id);
+            //int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
+            Collection<TradingDeal> tradingDeals = new TradingRepository(unitOfWork).getTradingDeals();
 
             unitOfWork.commitTransaction();
 
-            String userCardsPLAIN = "";
-
-            for(Card userCard : userCards)
-            {
-                userCardsPLAIN += "card-id: " + userCard.getCard_id() + ", name: " + userCard.getName() + ", damage: " + userCard.getDamage() + "\n";
-            }
+            String tradingDealsJSON = this.getObjectMapper().writeValueAsString(tradingDeals);
 
             return  new Response(
                     HttpStatus.OK,
-                    ContentType.PLAIN_TEXT,
-                    userCardsPLAIN
-            );
-        }
-        catch (JsonProcessingException exception) {
-            unitOfWork.rollbackTransaction();
-            return new Response(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    ContentType.PLAIN_TEXT,
-                    "Internal Server Error"
-            );
-        }
-        catch (InvalidLoginDataException e)
-        {
-            unitOfWork.rollbackTransaction();
-            return new Response(
-                    HttpStatus.UNAUTHORIZED,
-                    ContentType.PLAIN_TEXT,
-                    "Invalid username/password provided"
-            );
-        }
-        catch (NoDataException e)
-        {
-            unitOfWork.rollbackTransaction();
-            e.printStackTrace();
-            return new Response(
-                    HttpStatus.BAD_REQUEST,
-                    ContentType.PLAIN_TEXT,
-                    "The request was fine, but the user doesn't have any cards"
-            );
-        }
-        catch (DataAccessException e)
-        {
-            unitOfWork.rollbackTransaction();
-            e.printStackTrace();
-            return new Response(
-                    HttpStatus.CONFLICT,
-                    ContentType.PLAIN_TEXT,
-                    "Database Server Error"
-            );
-        }
-        catch (Exception e)
-        {
-            unitOfWork.rollbackTransaction();
-            return new Response(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
                     ContentType.JSON,
-                    "Internal Server Error"
-            );
-        }
-    }
-
-    public Response configureDeckCardsFromUser(Request request) {
-        UnitOfWork unitOfWork = new UnitOfWork();
-
-        try (unitOfWork) {
-            String userCards[] = this.getObjectMapper().readValue(request.getBody(), String[].class);
-            if(userCards.length != 4)
-            {
-                throw new InvalidDataException("The provided deck did not include the required amount of cards");
-            }
-
-            new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
-            int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
-            int deck_id = new DeckRepository(unitOfWork).createDeck(user_id);
-
-            for(String userCard : userCards)
-            {
-                new DeckRepository(unitOfWork).updateCardsForDeck(user_id, deck_id, userCard);
-            }
-
-            new DeckRepository(unitOfWork).updateOldCardDeck(user_id, deck_id);
-
-            unitOfWork.commitTransaction();
-
-            return  new Response(
-                    HttpStatus.OK,
-                    ContentType.PLAIN_TEXT,
-                    "The deck has been successfully configured"
+                    tradingDealsJSON
             );
         }
         catch (JsonProcessingException exception) {
@@ -207,9 +134,78 @@ public class DeckController extends Controller {
             unitOfWork.rollbackTransaction();
             e.printStackTrace();
             return new Response(
-                    HttpStatus.NOT_FOUND,
+                    //Mit Status 204 wird die Nachricht nicht angezeigt
+                    HttpStatus.BAD_REQUEST,
                     ContentType.PLAIN_TEXT,
-                    "The request was fine, but the user doesn't have any cards"
+                    "The request was fine, but there are no trading deals available"
+            );
+        }
+        catch (DataAccessException e)
+        {
+            unitOfWork.rollbackTransaction();
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.CONFLICT,
+                    ContentType.PLAIN_TEXT,
+                    "Database Server Error"
+            );
+        }
+        catch (Exception e)
+        {
+            unitOfWork.rollbackTransaction();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.JSON,
+                    "Internal Server Error"
+            );
+        }
+    }
+
+    public Response deleateTradingDeal(Request request) {
+        UnitOfWork unitOfWork = new UnitOfWork();
+
+        try (unitOfWork) {
+
+            new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
+            int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
+            String trading_id = request.getPathParts().get(1);
+
+            new TradingRepository(unitOfWork).updateTradingDealCardForDelete(user_id, trading_id);
+            new TradingRepository(unitOfWork).deleteTradingDeal(trading_id);
+
+            unitOfWork.commitTransaction();
+
+            return  new Response(
+                    HttpStatus.OK,
+                    ContentType.PLAIN_TEXT,
+                    "Trading deal successfully deleted"
+            );
+        }
+        catch (JsonProcessingException exception) {
+            unitOfWork.rollbackTransaction();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.PLAIN_TEXT,
+                    "Internal Server Error"
+            );
+        }
+        catch (InvalidLoginDataException e)
+        {
+            unitOfWork.rollbackTransaction();
+            return new Response(
+                    HttpStatus.UNAUTHORIZED,
+                    ContentType.PLAIN_TEXT,
+                    "Authentication information is missing or invalid"
+            );
+        }
+        catch (DataUpdateException e)
+        {
+            unitOfWork.rollbackTransaction();
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.CONFLICT,
+                    ContentType.PLAIN_TEXT,
+                    "Trading-Deal could not be deleted"
             );
         }
         catch (InvalidItemException e)
@@ -219,17 +215,7 @@ public class DeckController extends Controller {
             return new Response(
                     HttpStatus.FORBIDDEN,
                     ContentType.PLAIN_TEXT,
-                    "At least one of the provided cards does not belong to the user or is not available."
-            );
-        }
-        catch (InvalidDataException e)
-        {
-            unitOfWork.rollbackTransaction();
-            e.printStackTrace();
-            return new Response(
-                    HttpStatus.BAD_REQUEST,
-                    ContentType.PLAIN_TEXT,
-                    "The provided deck did not include the required amount of cards"
+                    "The deal contains a card that is not owned by the user or locked in the deck."
             );
         }
         catch (DataAccessException e)

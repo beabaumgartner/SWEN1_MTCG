@@ -83,7 +83,7 @@ public class DeckRepository {
         }
     }
 
-    public Integer getDeckIdByUserId(Integer user_id)
+    /*public Integer getDeckIdByUserId(Integer user_id)
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
@@ -105,22 +105,6 @@ public class DeckRepository {
 
         } catch (SQLException e) {
             throw new DataAccessException("Get dec-id could not be executed", e);
-        }
-    }
-
-    /*public void createDeckCards(Integer deck_id, String card_id)
-    {
-        try (PreparedStatement preparedStatement =
-                     this.unitOfWork.prepareStatement("""
-               INSERT INTO Deck_Cards (deck_id, card_id) VALUES(?, ?);
-                """))
-        {
-            preparedStatement.setInt(1, deck_id);
-            preparedStatement.setString(2, card_id);
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new DataAccessException("Create Deck-Cards could not be executed", e);
         }
     }*/
 }

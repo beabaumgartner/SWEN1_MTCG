@@ -61,7 +61,7 @@ public class UserRepository {
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if(resultSet.next() == false )
+            if(!resultSet.next())
             {
                 throw new NoDataException("User not found or no userdata exist.");
             }
