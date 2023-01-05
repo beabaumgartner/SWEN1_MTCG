@@ -59,11 +59,6 @@ public class TransactionPackageRepository {
             preparedStatement.setInt(1, package_id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if(!resultSet.next())
-            {
-                throw new NoDataException("No card package available for buying");
-            }
-
             Collection<Card> cardsInPackage = new ArrayList<>();
             while(resultSet.next())
             {
@@ -72,6 +67,11 @@ public class TransactionPackageRepository {
                         resultSet.getString(2),
                         resultSet.getInt(3));
                 cardsInPackage.add(card);
+            }
+
+            if(cardsInPackage.isEmpty())
+            {
+                throw new NoDataException("No card package available for buying");
             }
 
             return cardsInPackage;

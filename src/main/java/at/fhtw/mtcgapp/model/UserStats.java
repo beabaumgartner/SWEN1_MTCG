@@ -15,11 +15,11 @@ public class UserStats {
     // Jackson needs the default constructor
     public UserStats() {}
 
-    public UserStats(String name, Integer wins, Integer losses) {
+    public UserStats(String name, Integer wins, Integer losses, Integer elo) {
         this.name = name;
         this.wins = wins;
         this.losses = losses;
-        this.elo = wins-losses;
+        this.elo = elo;
     }
 
     public String getName() {
