@@ -17,8 +17,8 @@ public class BattlesService implements Service {
     }
     @Override
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.GET) {
-            //return this.battlesController.getCardsFromUser(request);
+        if (request.getMethod() == Method.POST) {
+            return this.battlesController.manageBattle(request);
         }
 
         return new Response(

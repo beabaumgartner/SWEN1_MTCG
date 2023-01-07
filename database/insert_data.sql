@@ -49,7 +49,7 @@ UPDATE Users
 SET name = 'Felix Schuster',
     bio = 'Ich mag Eislaufen',
     image = ':)'
-WHERE username = 'flex';
+WHERE username = 'altenhof' RETURNING username;
 
 UPDATE Package
 SET user_id = '1'
@@ -169,3 +169,7 @@ WHERE user_id = 1
 
 SELECT * FROM Cards
 WHERE card_id = '91a6471b-1426-43f6-ad65-6fc473e16f9f';
+
+SELECT COUNT(*) FROM Trading;
+
+SELECT card_id, card_name, damage, card_type From Cards WHERE user_id = ? AND deck_id IS NOT NULL;

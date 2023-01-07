@@ -1,9 +1,10 @@
 DROP TABLE IF EXISTS Users CASCADE;
 DROP TABLE IF EXISTS Cards CASCADE;
 DROP TABLE IF EXISTS Package CASCADE;
-DROP TABLE IF EXISTS Stack CASCADE;
 DROP TABLE IF EXISTS Deck CASCADE;
 DROP TABLE IF EXISTS Trading CASCADE;
+DROP TABLE IF EXISTS Battle CASCADE;
+DROP TABLE IF EXISTS Battle_Log CASCADE;
 DROP TABLE IF EXISTS Tokens CASCADE;
 
 -- CREATE DATABASE DB_MTCG;
@@ -13,12 +14,12 @@ CREATE TABLE Users (
                        user_id SERIAL PRIMARY KEY,
                        username VARCHAR UNIQUE NOT NULL,
                        name VARCHAR DEFAULT NULL,
-                       elo INT DEFAULT 100,
-                       coins INT Default 20,
-                       wins INT Default 0,
-                       losses INT Default 0,
                        bio VARCHAR DEFAULT NULL,
                        image VARCHAR DEFAULT NULL,
+                       elo INT DEFAULT 100,
+                       wins INT Default 0,
+                       losses INT Default 0,
+                       coins INT Default 20,
                        password VARCHAR NOT NULL
 );
 
@@ -55,6 +56,19 @@ CREATE TABLE Trading (
                          minimum_damage INT NOT NULL
 );
 
+CREATE TABLE Battle (
+                        battle_id SERIAL PRIMARY KEY,
+                        user1_id INT NULL,
+                        user2_id INT NULL,
+                        battle_status BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE Battle_Log (
+                            battle_log_id SERIAL PRIMARY KEY,
+                            battle_id INT NOT NULL,
+                            log VARCHAR NULL
+);
+
 -- alter tables
 ALTER TABLE Cards
     ADD CONSTRAINT package_id_fk
@@ -86,4 +100,9 @@ ALTER TABLE Tokens
             REFERENCES Users (user_id)
             ON DELETE CASCADE;
 
-;
+ALTER TABLE Battle_Log
+    ADD CONSTRAINT battle_id_fk
+        FOREIGN KEY (battle_id)
+            REFERENCES Battle (battle_id)
+            ON DELETE CASCADE;
+
