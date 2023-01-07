@@ -8,6 +8,7 @@ import at.fhtw.mtcgapp.controller.Controller;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.dal.repository.SessionRepository;
 import at.fhtw.mtcgapp.dal.repository.TradingRepository;
+import at.fhtw.mtcgapp.dal.repository.UserRepository;
 import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.model.TradingDeal;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,8 +26,8 @@ public class TradingController extends Controller {
             int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
             TradingDeal tradingDeal = this.getObjectMapper().readValue(request.getBody(), TradingDeal.class);
 
-            new TradingRepository(unitOfWork).creatTradingDeal(tradingDeal);
-            new TradingRepository(unitOfWork).updateCardForTradingDeal(tradingDeal, user_id);
+            new TradingRepository(unitOfWork).createTradingDeal(tradingDeal);
+            new TradingRepository(unitOfWork).updateCardForCreateTradingDeal(tradingDeal, user_id);
             unitOfWork.commitTransaction();
 
             return  new Response(
@@ -99,8 +100,8 @@ public class TradingController extends Controller {
         try (unitOfWork) {
 
             new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
-            //int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
-            Collection<TradingDeal> tradingDeals = new TradingRepository(unitOfWork).getTradingDeals();
+            int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
+            Collection<TradingDeal> tradingDeals = new TradingRepository(unitOfWork).getAllTradingDeals();
 
             unitOfWork.commitTransaction();
 
@@ -216,6 +217,96 @@ public class TradingController extends Controller {
                     HttpStatus.FORBIDDEN,
                     ContentType.PLAIN_TEXT,
                     "The deal contains a card that is not owned by the user or locked in the deck."
+            );
+        }
+        catch (DataAccessException e)
+        {
+            unitOfWork.rollbackTransaction();
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.CONFLICT,
+                    ContentType.PLAIN_TEXT,
+                    "Database Server Error"
+            );
+        }
+        catch (Exception e)
+        {
+            unitOfWork.rollbackTransaction();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.JSON,
+                    "Internal Server Error"
+            );
+        }
+    }
+
+    public Response carryOutTradingDeal(Request request) {
+        UnitOfWork unitOfWork = new UnitOfWork();
+
+        try (unitOfWork) {
+            System.out.println("1");
+
+            new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
+            int buyerUser_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
+
+
+            String trading_id = request.getPathParts().get(1);
+            String offeredCardId = this.getObjectMapper().readValue(request.getBody(), String.class);
+            TradingDeal tradingDeal = new TradingRepository(unitOfWork).getTradingDealByTradingId(trading_id);
+            Integer sellerUser_id = new UserRepository(unitOfWork).getUserByCardId(tradingDeal.getCard_to_trade());
+
+            //ptüft ob trade gültig ist
+            new TradingRepository(unitOfWork).checkOfferedCardForTrading(tradingDeal, buyerUser_id, sellerUser_id, offeredCardId);
+
+            // tauscht die Karten zu den jeweiligen Usern
+            new TradingRepository(unitOfWork).updateCardForCarryOutTradingDeal(buyerUser_id, sellerUser_id, tradingDeal.getCard_to_trade());
+            new TradingRepository(unitOfWork).updateCardForCarryOutTradingDeal(sellerUser_id, buyerUser_id, offeredCardId);
+
+            new TradingRepository(unitOfWork).deleteTradingDeal(tradingDeal.getTrading_id());
+
+            unitOfWork.commitTransaction();
+
+            return  new Response(
+                    HttpStatus.OK,
+                    ContentType.PLAIN_TEXT,
+                    "Trading deal successfully executed."
+            );
+        }
+        catch (JsonProcessingException exception) {
+            unitOfWork.rollbackTransaction();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.PLAIN_TEXT,
+                    "Internal Server Error"
+            );
+        }
+        catch (InvalidLoginDataException e)
+        {
+            unitOfWork.rollbackTransaction();
+            return new Response(
+                    HttpStatus.UNAUTHORIZED,
+                    ContentType.PLAIN_TEXT,
+                    "Authentication information is missing or invalid"
+            );
+        }
+        catch (NotFoundException e)
+        {
+            unitOfWork.rollbackTransaction();
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.NOT_FOUND,
+                    ContentType.PLAIN_TEXT,
+                    "The provided deal ID was not found."
+            );
+        }
+        catch (InvalidItemException e)
+        {
+            unitOfWork.rollbackTransaction();
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.FORBIDDEN,
+                    ContentType.PLAIN_TEXT,
+                    "The offered card is not owned by the user, or the requirements are not met (Type, MinimumDamage), or the offered card is locked in the deck."
             );
         }
         catch (DataAccessException e)

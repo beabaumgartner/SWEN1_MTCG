@@ -16,6 +16,9 @@ public class TradingService implements Service {
     }
     @Override
     public Response handleRequest(Request request) {
+        if (request.getMethod() == Method.POST && request.getPathParts().size() == 2) {
+            return this.tradingController.carryOutTradingDeal(request);
+        }
         if (request.getMethod() == Method.POST) {
             return this.tradingController.createTradingDeal(request);
         }

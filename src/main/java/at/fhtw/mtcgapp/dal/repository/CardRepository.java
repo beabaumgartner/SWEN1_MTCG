@@ -3,7 +3,9 @@ package at.fhtw.mtcgapp.dal.repository;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.exception.DataAccessException;
 import at.fhtw.mtcgapp.exception.NoDataException;
+import at.fhtw.mtcgapp.exception.NotFoundException;
 import at.fhtw.mtcgapp.model.Card;
+import at.fhtw.mtcgapp.model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -86,6 +88,35 @@ public class CardRepository {
 
         } catch (SQLException e) {
             throw new DataAccessException("Create Package could not be executed", e);
+        }
+    }
+
+    public Card getCardByCardId(String card_id) {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                             SELECT Cards.card_id, Cards.card_name, Cards.damage
+                             FROM Cards
+                                WHERE card_id = ?
+                                AND deck_id IS NULL
+                                AND trading_id IS NULL;
+                                      """)) {
+            preparedStatement.setString(1, card_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (!resultSet.next()) {
+                throw new NotFoundException("No Card with Card-Id: " + card_id + " found");
+            }
+
+            Card card = new Card(
+                    resultSet.getString("card_id"),
+                    resultSet.getString("card_name"),
+                    resultSet.getInt("damage")
+            );
+
+            return card;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Get Card by Card-Id could not be executed", e);
         }
     }
 }

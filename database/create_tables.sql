@@ -22,14 +22,16 @@ CREATE TABLE Tokens (
 
 CREATE TABLE Cards (
     card_id VARCHAR PRIMARY KEY,
+    card_name VARCHAR NOT NULL,
+    card_type VARCHAR NOT NULL,
+    damage INT NOT NULL,
     user_id INT NULL,
-    deck_id INT NULL,
     package_id INT NULL,
     stack_id INT NULL,
-    trading_id VARCHAR NULL,
-    card_name VARCHAR NOT NULL,
-    damage INT NOT NULL
+    deck_id INT NULL,
+    trading_id VARCHAR NULL
 );
+
 CREATE TABLE Package (
     package_id SERIAL PRIMARY KEY
 );
@@ -40,7 +42,8 @@ CREATE TABLE Deck (
 
 CREATE TABLE Trading (
     trading_id VARCHAR PRIMARY KEY,
-    type_card VARCHAR NOT NULL,
+    card_to_trade VARCHAR NOT NULL,
+    card_type VARCHAR NOT NULL,
     minimum_damage INT NOT NULL
 );
 
