@@ -4,7 +4,9 @@ import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.exception.DataAccessException;
 import at.fhtw.mtcgapp.exception.DataUpdateException;
 import at.fhtw.mtcgapp.exception.InvalidItemException;
+import at.fhtw.mtcgapp.exception.NoDataException;
 import at.fhtw.mtcgapp.model.Card;
+import at.fhtw.mtcgapp.model.UserStats;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -83,28 +85,38 @@ public class DeckRepository {
         }
     }
 
-    /*public Integer getDeckIdByUserId(Integer user_id)
+    public Collection<Card> getDeckByUserId(Integer user_id)
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-               SELECT card_id, card_name, damage From Cards WHERE user_id = ? AND deck_id IS NOT NULL;
+               SELECT card_id, card_name, damage From Cards 
+                   WHERE user_id = ? 
+                   AND deck_id IS NOT NULL;
                 """))
         {
             preparedStatement.setInt(1, user_id);
             ResultSet resultSet = preparedStatement.executeQuery();
+            Collection<Card> deckCardList = new ArrayList<>();
 
-            if(!resultSet.next())
+            while(resultSet.next())
             {
-                //if no Deck exists, create new STack and return id
-                return createDeck(user_id);
+                Card card = new Card(
+                        resultSet.getString("card_id"),
+                        resultSet.getString("card_name"),
+                        resultSet.getInt("damage")
+                );
+                deckCardList.add(card);
             }
-            else
+
+            if(deckCardList.isEmpty())
             {
-                return resultSet.getInt("stack_id");
+                throw new NoDataException("User does not have any cards in his deck");
             }
+
+            return deckCardList;
 
         } catch (SQLException e) {
-            throw new DataAccessException("Get dec-id could not be executed", e);
+            throw new DataAccessException("Get deck by user-id could not be executed", e);
         }
-    }*/
+    }
 }

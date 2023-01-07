@@ -3,12 +3,10 @@ package at.fhtw.mtcgapp.dal.repository;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.model.Card;
-import at.fhtw.sampleapp.model.Weather;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class PackageRepository {
     private UnitOfWork unitOfWork;
@@ -56,7 +54,7 @@ public class PackageRepository {
         {
             preparedStatement.setString(1, card.getCard_id());
             preparedStatement.setString(2, card.getName());
-            preparedStatement.setString(3, card.getCard_type());
+            preparedStatement.setString(3, card.getCardType());
             preparedStatement.setInt(4, card.getDamage());
             preparedStatement.setInt(5, package_id);
             preparedStatement.executeUpdate();
