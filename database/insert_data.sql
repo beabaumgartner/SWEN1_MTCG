@@ -1,7 +1,7 @@
 INSERT INTO Users (username, password) VALUES('bea08', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 INSERT INTO Users (username, password) VALUES('flex', '$2y$10$WpYMMVI32Dgc.JkVDynGTucqJbindPY.LMWfDBl.12WfBv9HBUySO');
 
-INSERT INTO Cards (card_id, card_name, damage, package_id) VALUES('da', 'Wasserkobold',32, 12);
+INSERT INTO Cards (card_id, card_name, card_type, damage) VALUES('da', 'Wasserkobold', 'monster',32);
 INSERT INTO Cards (card_id, card_name, damage) VALUES('do', 'Hexe',50);
 INSERT INTO Cards (card_id, card_name, damage) VALUES('de', 'Hydra',22);
 INSERT INTO Cards (card_id, card_name, damage) VALUES('di', 'Kobold',30);
@@ -30,8 +30,12 @@ INSERT INTO Deck_Cards (deck_id, card_id) VALUES(2, 'do');
 INSERT INTO Deck_Cards (deck_id, card_id) VALUES(2, 'do');
 
 ----------------------------------------------------------------------
-INSERT INTO Package (user_id) VALUES(NULL);
-INSERT INTO Package (user_id) VALUES(NULL);
+INSERT INTO Package (package_id) VALUES(DEFAULT);
+INSERT INTO Package (package_id) VALUES(DEFAULT);
+
+INSERT INTO Cards (card_id, card_name, damage) VALUES('di', 'Kobold',30);
+
+
 
 INSERT INTO Package_Cards (package_id, card_id) VALUES(1, 'do');
 INSERT INTO Package_Cards (package_id, card_id) VALUES(1, 'da');
@@ -139,3 +143,29 @@ WHERE user_id = 1 AND card_id = '91a6471b-1426-43f6-ad65-6fc473e16f9f';
 
 DELETE FROM Trading
 WHERE trading_id = '336cd85277-4590-49d4-b0cf-ba0a921faad0';
+
+
+SELECT Cards.trading_id, Cards.card_id, Trading.type_card, Trading.minimum_damage
+FROM Trading JOIN Cards
+ON Trading.trading_id = Cards.trading_id WHERE Trading.trading_id = '336cd85277-4590-49d4-b0cf-ba0a921faad0';
+
+
+INSERT INTO Cards (card_id, card_name, damage, card_type, package_id) VALUES(?, ?, ?, ?, ?);
+
+SELECT Cards.card_id, Cards.card_name, Cards.damage
+FROM Cards
+WHERE card_id = '4a2757d6-b1c3-47ac-b9a3-91deab093531'
+  AND user_id = 1
+  AND deck_id IS NULL
+  AND trading_id IS NULL;
+
+
+SELECT card_id, card_name, damage From Cards
+WHERE user_id = 1
+  AND card_id = 1
+  And deck_id IS NULL
+  AND card_type = ?
+  AND damage >= ?;
+
+SELECT * FROM Cards
+WHERE card_id = '91a6471b-1426-43f6-ad65-6fc473e16f9f';

@@ -8,17 +8,17 @@ public class TradingDeal {
     @JsonAlias({"CardToTrade"})
     private String card_to_trade;
     @JsonAlias({"Type"})
-    private String type;
+    private String card_type;
     @JsonAlias({"MinimumDamage"})
     private Integer minimum_damage;
 
     // Jackson needs the default constructor
     public TradingDeal() {}
 
-    public TradingDeal(String trading_id, String card_to_trade, String type, Integer minimum_damage) {
+    public TradingDeal(String trading_id, String card_to_trade, String card_type, Integer minimum_damage) {
         this.trading_id = trading_id;
         this.card_to_trade = card_to_trade;
-        this.type = type;
+        this.card_type = card_type;
         this.minimum_damage = minimum_damage;
     }
 
@@ -38,12 +38,12 @@ public class TradingDeal {
         this.card_to_trade = card_to_trade;
     }
 
-    public String getType() {
-        return type;
+    public String getCard_type() {
+        return card_type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setCard_type(String card_type) {
+        this.card_type = card_type;
     }
 
     public Integer getMinimum_damage() {

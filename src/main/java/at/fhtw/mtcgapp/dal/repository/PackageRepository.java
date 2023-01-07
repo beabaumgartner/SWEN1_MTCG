@@ -47,33 +47,18 @@ public class PackageRepository {
         }
     }
 
-    /*public void createPackageCards(Integer package_id, String card_id)
-    {
-        try (PreparedStatement preparedStatement =
-                     this.unitOfWork.prepareStatement("""
-                INSERT INTO Package_Cards (package_id, card_id) VALUES(?, ?);
-                """))
-        {
-            preparedStatement.setInt(1, package_id);
-            preparedStatement.setString(2, card_id);
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new DataAccessException("Create Package could not be executed", e);
-        }
-    }*/
-
     public void createCardsForPackage(Card card, Integer package_id)
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                INSERT INTO Cards (card_id, card_name, damage, package_id) VALUES(?, ?, ?, ?);
+                INSERT INTO Cards (card_id, card_name, card_type, damage, package_id) VALUES(?, ?, ?, ?, ?);
                 """))
         {
             preparedStatement.setString(1, card.getCard_id());
             preparedStatement.setString(2, card.getName());
-            preparedStatement.setInt(3, card.getDamage());
-            preparedStatement.setInt(4, package_id);
+            preparedStatement.setString(3, card.getCard_type());
+            preparedStatement.setInt(4, card.getDamage());
+            preparedStatement.setInt(5, package_id);
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {

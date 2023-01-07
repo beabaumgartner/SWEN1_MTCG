@@ -1,11 +1,10 @@
 package at.fhtw.mtcgapp.dal.repository;
 
 import at.fhtw.mtcgapp.dal.DatabaseConnection;
-import at.fhtw.mtcgapp.exception.ConstraintViolationException;
-import at.fhtw.mtcgapp.exception.DataAccessException;
+import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
-import at.fhtw.mtcgapp.exception.DataUpdateException;
-import at.fhtw.mtcgapp.exception.NoDataException;
+import at.fhtw.mtcgapp.model.Card;
+import at.fhtw.mtcgapp.model.User;
 import at.fhtw.mtcgapp.model.UserCredentials;
 import at.fhtw.mtcgapp.model.UserData;
 import at.fhtw.sampleapp.model.Weather;
@@ -101,6 +100,28 @@ public class UserRepository {
 
         } catch (SQLException e) {
             throw new DataAccessException("Update could not be executed", e);
+        }
+    }
+
+    public Integer getUserByCardId(String card_id) {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                             SELECT * FROM Cards
+                                WHERE card_id = ?;
+                                      """)) {
+            preparedStatement.setString(1, card_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (!resultSet.next()) {
+                throw new NotFoundException("No User with Card-Id: " + card_id + " found");
+            }
+
+            Integer user_id = resultSet.getInt("user_id");
+
+            return user_id;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Get User by Card-Id could not be executed", e);
         }
     }
 }
