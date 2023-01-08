@@ -74,7 +74,7 @@ public class BattlesController extends Controller {
                 // battle logic in class -> method calculateWinner(List<Card> deckCardsForRound)
                 Battle battle = new Battle(battle_lobby_id, usersFromBattle.get(0), usersFromBattle.get(1));
                 battle.setBattleLog("Battle: " + usersFromBattle.get(0).getUsername() + " vs " + usersFromBattle.get(1).getUsername() + "\n");
-                int rounds;
+                int rounds = 0;
 
                 for (rounds = 1; rounds < maxRounds + 1; ++rounds) {
                     if (firstPlayerDeck.isEmpty() || secondPlayerDeck.isEmpty()) {
@@ -175,7 +175,7 @@ public class BattlesController extends Controller {
                 }
                 else
                 {
-                    battle.setBattleLog("\n=> Draw");
+                    battle.setBattleLog("=> Draw");
                 }
 
                 // battle log
