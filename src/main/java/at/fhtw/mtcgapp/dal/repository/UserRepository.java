@@ -54,7 +54,7 @@ public class UserRepository {
     public UserData getUserDataByUsername(String username) {
         try (PreparedStatement preparedStatement =
                  this.unitOfWork.prepareStatement("""
-                SELECT name, bio, image from Users Where username = ?
+                SELECT name, bio, image FROM Users WHERE username = ?
                 """))
         {
             preparedStatement.setString(1, username);
