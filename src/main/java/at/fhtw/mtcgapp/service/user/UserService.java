@@ -6,8 +6,6 @@ import at.fhtw.httpserver.http.Method;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.httpserver.server.Service;
-import at.fhtw.mtcgapp.dal.UnitOfWork;
-import at.fhtw.mtcgapp.dal.repository.UserRepository;
 
 public class UserService implements Service {
     private final UserController userController;
@@ -18,13 +16,15 @@ public class UserService implements Service {
     }
     @Override
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.GET) {
+        if (request.getMethod() == Method.PUT &&
+                request.getPathParts().size() > 1) {
+            return this.userController.updateUser(request);
+        }
+        else if (request.getMethod() == Method.GET &&
+                request.getPathParts().size() > 1) {
             return this.userController.getUserDataByUsername(request);
         } else if (request.getMethod() == Method.POST) {
             return this.userController.addUser(request);
-        } else if (request.getMethod() == Method.PUT &&
-                request.getPathParts().size() > 1) {
-            return this.userController.updateUser(request);
         }
 
         return new Response(

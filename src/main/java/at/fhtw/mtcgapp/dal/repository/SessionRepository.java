@@ -105,7 +105,7 @@ public class SessionRepository {
             preparedStatement.setString(1, request.getHeaderMap().getAuthorizationTokenHeader().substring(6));
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if(resultSet.next() == false)
+            if(!resultSet.next())
             {
                 throw new InvalidLoginDataException("Authentication information is missing or invalid");
             }

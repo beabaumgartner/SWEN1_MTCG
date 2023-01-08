@@ -8,12 +8,15 @@ import at.fhtw.mtcgapp.controller.Controller;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.dal.repository.*;
 import at.fhtw.mtcgapp.exception.*;
-import at.fhtw.mtcgapp.model.Battle;
 import at.fhtw.mtcgapp.model.Card;
 import at.fhtw.mtcgapp.model.User;
+import at.fhtw.mtcgapp.model.UserStats;
+import at.fhtw.mtcgapp.service.game.battles.battleImplementations.Battle;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class BattlesController extends Controller {
     public Response manageBattle(Request request) {
@@ -25,7 +28,7 @@ public class BattlesController extends Controller {
 
             String battle_log = "";
 
-            // first player
+            // first player if Lobby is empty
             if (new BattlesRepository(unitOfWork).isLobbyEmpty()) {
                 int firstPlayerUser_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
                 int battle_lobby_id = new BattlesRepository(unitOfWork).createBattleLobby(firstPlayerUser_id);
@@ -58,7 +61,7 @@ public class BattlesController extends Controller {
 
                 secondUnitOfWork.commitTransaction();
             }
-            else // second Player
+            else // second Player if Lobby is not empty
             {
                 int maxRounds = 100;
                 int secondPlayerUser_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
@@ -70,17 +73,17 @@ public class BattlesController extends Controller {
 
                 // battle logic in class -> method calculateWinner(List<Card> deckCardsForRound)
                 Battle battle = new Battle(battle_lobby_id, usersFromBattle.get(0), usersFromBattle.get(1));
+                battle.setBattleLog("Battle: " + usersFromBattle.get(0).getUsername() + " vs " + usersFromBattle.get(1).getUsername() + "\n");
+                int rounds;
 
-                for(int i = 1; i < maxRounds + 1; ++i)
-                {
-                    if(firstPlayerDeck.isEmpty() || secondPlayerDeck.isEmpty())
-                    {
+                for (rounds = 1; rounds < maxRounds + 1; ++rounds) {
+                    if (firstPlayerDeck.isEmpty() || secondPlayerDeck.isEmpty()) {
                         break;
                     }
                     Collections.shuffle(firstPlayerDeck);
                     Collections.shuffle(secondPlayerDeck);
 
-                    battle.setBattleLog("\nRound " + i + ":\n");
+                    battle.setBattleLog("\nRound " + rounds + ":\n");
 
                     //deck cards for round
                     List<Card> deckCardsForRound = new ArrayList<>();
@@ -90,59 +93,85 @@ public class BattlesController extends Controller {
                     String winner = battle.calculateWinner(deckCardsForRound);
 
                     // handle win and change cards in List
-                    if(winner.equals("playerA"))
-                    {
+                    if (winner.equals("playerA")) {
                         battle.setBattleLog("=> " + deckCardsForRound.get(0).getName() + " wins");
                         Card deckCard = secondPlayerDeck.get(0);
                         secondPlayerDeck.remove(deckCard);
                         firstPlayerDeck.add(deckCard);
-                    }
-                    else if (winner.equals("playerB"))
-                    {
+                    } else if (winner.equals("playerB")) {
                         battle.setBattleLog("=> " + deckCardsForRound.get(1).getName() + " wins");
                         Card deckCard = firstPlayerDeck.get(0);
                         firstPlayerDeck.remove(deckCard);
                         secondPlayerDeck.add(deckCard);
-                    }
-                    else if (winner.equals("draw"))
-                    {
+                    } else if (winner.equals("draw")) {
                         battle.setBattleLog("=> Draw");
-                    }
-                    else
-                    {
+                    } else {
                         throw new NoDataException("No winner could be calculated");
                     }
+                    battle.setBattleLog("\nDeck-Card Amount of " + usersFromBattle.get(0).getUsername() + ": " + firstPlayerDeck.size() +
+                                        " vs " + usersFromBattle.get(1).getUsername() + ": " + secondPlayerDeck.size() +"\n");
                 }
 
-                //change card owner in db
-                if(!firstPlayerDeck.isEmpty())
-                {
-                    for(Card card : firstPlayerDeck)
-                    {
-                        new CardRepository(unitOfWork).updateCardOwner(usersFromBattle.get(0).getId(), card.getCard_id());
+                //change gained cards and userstats if game result is not a draw
+                if (rounds < (maxRounds-1)) {
+                    //change card owner in db
+                    if (!firstPlayerDeck.isEmpty()) {
+                        for (Card card : firstPlayerDeck) {
+                            new CardRepository(unitOfWork).updateCardOwner(usersFromBattle.get(0).getId(), card.getCard_id());
+                        }
                     }
-                }
-                if(!secondPlayerDeck.isEmpty())
-                {
-                    for(Card card : secondPlayerDeck)
-                    {
-                        new CardRepository(unitOfWork).updateCardOwner(usersFromBattle.get(1).getId(), card.getCard_id());
+                    if (!secondPlayerDeck.isEmpty()) {
+                        for (Card card : secondPlayerDeck) {
+                            new CardRepository(unitOfWork).updateCardOwner(usersFromBattle.get(1).getId(), card.getCard_id());
+                        }
                     }
-                }
 
-                //update Deck
-                Integer playerAoldDeck_id = new DeckRepository(unitOfWork).getDeckIdByUserId(usersFromBattle.get(0).getId());
-                Integer playerBoldDeck_id = new DeckRepository(unitOfWork).getDeckIdByUserId(usersFromBattle.get(1).getId());
-                new DeckRepository(unitOfWork).removeOldDeck(usersFromBattle.get(0).getId());
-                new DeckRepository(unitOfWork).removeOldDeck(usersFromBattle.get(1).getId());
+                    //update Deck
+                    Integer playerAoldDeck_id = new DeckRepository(unitOfWork).getDeckIdByUserId(usersFromBattle.get(0).getId());
+                    Integer playerBoldDeck_id = new DeckRepository(unitOfWork).getDeckIdByUserId(usersFromBattle.get(1).getId());
+                    new DeckRepository(unitOfWork).removeOldDeck(usersFromBattle.get(0).getId());
+                    new DeckRepository(unitOfWork).removeOldDeck(usersFromBattle.get(1).getId());
 
-                if(playerAoldDeck_id != null)
-                {
-                    new DeckRepository(unitOfWork).deleteOldDeck(playerAoldDeck_id);
-                }
-                if(playerBoldDeck_id != null)
-                {
-                    new DeckRepository(unitOfWork).deleteOldDeck(playerBoldDeck_id);
+                    if (playerAoldDeck_id != null) {
+                        new DeckRepository(unitOfWork).deleteOldDeck(playerAoldDeck_id);
+                    }
+                    if (playerBoldDeck_id != null) {
+                        new DeckRepository(unitOfWork).deleteOldDeck(playerBoldDeck_id);
+                    }
+
+                    // update userStats
+                    if(firstPlayerDeck.size() > secondPlayerDeck.size())
+                    {
+                        //update winner
+                        UserStats firstPlayerUserStats = new StatsRepository(unitOfWork).getStatsByUserId(usersFromBattle.get(0).getId());
+                        firstPlayerUserStats.setEloWinner();
+                        firstPlayerUserStats.increaseWins();
+                        new StatsRepository(unitOfWork).updateStatsByUserId(usersFromBattle.get(0).getId(), firstPlayerUserStats);
+
+                        //update looser
+                        UserStats secondPlayerUserStats = new StatsRepository(unitOfWork).getStatsByUserId(usersFromBattle.get(1).getId());
+                        secondPlayerUserStats.setEloLooser();
+                        secondPlayerUserStats.increaseLooses();
+                        new StatsRepository(unitOfWork).updateStatsByUserId(usersFromBattle.get(1).getId(), secondPlayerUserStats);
+
+                        battle.setBattleLog("\n=> " + usersFromBattle.get(0).getUsername() + " wins");
+                    }
+                    else if(firstPlayerDeck.size() < secondPlayerDeck.size())
+                    {
+                        //update winner
+                        UserStats secondPlayerUserStats = new StatsRepository(unitOfWork).getStatsByUserId(usersFromBattle.get(1).getId());
+                        secondPlayerUserStats.setEloWinner();
+                        secondPlayerUserStats.increaseWins();
+                        new StatsRepository(unitOfWork).updateStatsByUserId(usersFromBattle.get(1).getId(), secondPlayerUserStats);
+
+                        //update looser
+                        UserStats firstPlayerUserStats = new StatsRepository(unitOfWork).getStatsByUserId(usersFromBattle.get(0).getId());
+                        firstPlayerUserStats.setEloLooser();
+                        firstPlayerUserStats.increaseLooses();
+                        new StatsRepository(unitOfWork).updateStatsByUserId(usersFromBattle.get(0).getId(), firstPlayerUserStats);
+
+                        battle.setBattleLog("\n=> " + usersFromBattle.get(1).getUsername() + " wins");
+                    }
                 }
 
                 // battle log
@@ -156,8 +185,7 @@ public class BattlesController extends Controller {
             return new Response(
                     HttpStatus.OK,
                     ContentType.PLAIN_TEXT,
-                    "The battle has been carried out successfully.\n" +
-                            battle_log
+                    battle_log
 
             );
         } catch (JsonProcessingException exception) {

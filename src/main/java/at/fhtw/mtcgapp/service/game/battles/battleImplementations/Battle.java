@@ -1,4 +1,7 @@
-package at.fhtw.mtcgapp.model;
+package at.fhtw.mtcgapp.service.game.battles.battleImplementations;
+
+import at.fhtw.mtcgapp.model.Card;
+import at.fhtw.mtcgapp.model.User;
 
 import java.util.List;
 

@@ -15,12 +15,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class UserController extends Controller {
 
-    private UserDummyDAL userDAL;
-
-    public UserController() {
-        this.userDAL = new UserDummyDAL();
-    }
-
     public Response addUser(Request request) {
         UnitOfWork unitOfWork = new UnitOfWork();
 
@@ -78,7 +72,7 @@ public class UserController extends Controller {
         UnitOfWork unitOfWork = new UnitOfWork();
 
         try (unitOfWork) {
-            new SessionRepository(unitOfWork).checkIfTokenAndUsernameIsValid(request.getPathParts().get(1), request);
+            new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
             unitOfWork.commitTransaction();
             UserData userData = new UserRepository(unitOfWork).getUserDataByUsername(request.getPathParts().get(1));
             unitOfWork.commitTransaction();
