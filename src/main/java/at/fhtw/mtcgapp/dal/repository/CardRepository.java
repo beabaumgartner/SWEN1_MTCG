@@ -6,7 +6,6 @@ import at.fhtw.mtcgapp.exception.DataUpdateException;
 import at.fhtw.mtcgapp.exception.NoDataException;
 import at.fhtw.mtcgapp.exception.NotFoundException;
 import at.fhtw.mtcgapp.model.Card;
-import at.fhtw.mtcgapp.model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,7 +29,9 @@ public class CardRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                       SELECT card_id, card_name, damage From Cards WHERE user_id = ?;
+                       SELECT card_id, card_name, damage From Cards 
+                       WHERE user_id = ?
+                       Order BY card_id DESC;
                 """))
         {
             preparedStatement.setInt(1, user_id);
@@ -63,7 +64,9 @@ public class CardRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                       SELECT card_id, card_name, damage From Cards WHERE user_id = ? AND deck_id IS NOT NULL;
+                       SELECT card_id, card_name, damage From Cards 
+                       WHERE user_id = ? AND deck_id IS NOT NULL
+                       Order BY card_id DESC;
                 """))
         {
             preparedStatement.setInt(1, user_id);
