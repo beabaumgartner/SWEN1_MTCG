@@ -1,4 +1,4 @@
--- CREATE DATABASE DB_MTCG;
+-- CREATE DATABASE DB_MTCG
 
 -- create tables
 CREATE TABLE Users (
@@ -85,9 +85,27 @@ FOREIGN KEY (trading_id)
 REFERENCES Trading (trading_id)
 ON DELETE CASCADE;
 
+ALTER TABLE Trading
+ADD CONSTRAINT card_to_trade_id_fk
+FOREIGN KEY (card_to_trade)
+REFERENCES Cards (card_id)
+ON DELETE CASCADE;
+
 ALTER TABLE Tokens
 ADD CONSTRAINT user_id_fk
 FOREIGN KEY (user_id)
+REFERENCES Users (user_id)
+ON DELETE CASCADE;
+
+ALTER TABLE Battle
+ADD CONSTRAINT user1_id_fk
+FOREIGN KEY (user1_id)
+REFERENCES Users (user_id)
+ON DELETE CASCADE;
+
+ALTER TABLE Battle
+ADD CONSTRAINT user2_id_fk
+FOREIGN KEY (user2_id)
 REFERENCES Users (user_id)
 ON DELETE CASCADE;
 
