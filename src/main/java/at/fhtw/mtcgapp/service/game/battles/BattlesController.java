@@ -173,6 +173,10 @@ public class BattlesController extends Controller {
                         battle.setBattleLog("\n=> " + usersFromBattle.get(1).getUsername() + " wins");
                     }
                 }
+                else
+                {
+                    battle.setBattleLog("\n=> Draw");
+                }
 
                 // battle log
                 battle_log = battle.getBattle_log();
