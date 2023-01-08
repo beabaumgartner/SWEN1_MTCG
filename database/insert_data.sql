@@ -220,3 +220,32 @@ WHERE Cards.deck_id IS NULL;
 UPDATE Cards
 SET deck_id = NULL
 WHERE user_id = 1 AND deck_id != 4;
+
+SELECT Battle.battle_id,
+(Select Users.username FROM Users, Battle
+ WHERE Battle.user1_id = Users.user_id
+                                   ) AS user1,
+Battle.user2_id, Users.username, Battle.battle_id FROM Battle_Log
+JOIN Battle
+ON Battle_log.battle_id = Battle.battle_id
+JOIN Users
+ON Users.user_id = 1
+WHERE Battle.user1_id = 1 OR Battle.user2_id = 1
+AND log IS NOT NULL;
+
+Select Users.username FROM Users JOIN Battle ON Users.user_id = Battle.user1_id
+
+Select Users.username FROM Users JOIN Battle
+ON Users.user_id = Battle.user1_id
+WHERE Users.user_id = Battle.user1_id
+AND Battle.user1_id = 1 OR Battle.user2_id = 1
+
+
+SELECT Battle_Log.battle_log_id, Battle.user1_id, Battle.user2_id, Battle_Log.log FROM Battle_Log
+JOIN Battle
+ON Battle_log.battle_id = Battle.battle_id
+WHERE Battle.user1_id = 1 OR Battle.user2_id = 1
+AND log IS NOT NULL;
+
+Select Users.username FROM Users, Battle
+WHERE Battle.user1_id = Users.user_id;

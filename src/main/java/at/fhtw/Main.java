@@ -3,6 +3,7 @@ package at.fhtw;
 import at.fhtw.httpserver.server.Service;
 import at.fhtw.httpserver.utils.Router;
 import at.fhtw.httpserver.server.Server;
+import at.fhtw.mtcgapp.service.battlelogs.BattlelogsService;
 import at.fhtw.mtcgapp.service.cards.CardService;
 import at.fhtw.mtcgapp.service.deck.DeckService;
 import at.fhtw.mtcgapp.service.game.battles.BattlesService;
@@ -42,7 +43,7 @@ public class Main {
         router.addService("/score", new ScoreboardService());
         router.addService("/battles", new BattlesService());
         router.addService("/tradings", new TradingService());
-        router.addService("/battlelogs", new TradingService());
+        router.addService("/battlelogs", new BattlelogsService());
         return router;
     }
 }
