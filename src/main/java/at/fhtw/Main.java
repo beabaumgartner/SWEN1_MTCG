@@ -42,6 +42,7 @@ public class Main {
         router.addService("/score", new ScoreboardService());
         router.addService("/battles", new BattlesService());
         router.addService("/tradings", new TradingService());
+        router.addService("/battlelogs", new TradingService());
         return router;
     }
 }

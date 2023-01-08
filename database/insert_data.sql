@@ -173,3 +173,50 @@ WHERE card_id = '91a6471b-1426-43f6-ad65-6fc473e16f9f';
 SELECT COUNT(*) FROM Trading;
 
 SELECT card_id, card_name, damage, card_type From Cards WHERE user_id = ? AND deck_id IS NOT NULL;
+
+SELECT Users.user_id, Users.username FROM Users
+JOIN Battle
+ON Users.user_id = Battle.user1_id
+OR Users.user_id = Battle.user2_id
+WHERE battle_id = 1;
+
+DELETE FROM Battle
+WHERE battle_id = 1
+  AND battle_status IS FALSE;
+
+UPDATE Battle
+SET battle_status = true
+WHERE battle_id = ?
+
+UPDATE Battle
+SET user2_id = 2
+WHERE user1_id IS NOT NULL
+  AND user1_id != 2
+RETURNING battle_id;
+
+INSERT INTO Battle_Log (battle_log_id, battle_id, log) VALUES (DEFAULT, 2, 'daaaaaaaaaaawwwwwwwwwwwww')
+
+SELECT Deck.deck_id FROM Deck
+Left JOIN Cards
+ON Deck.deck_id = Cards.deck_id
+WHERE Cards.deck_id IS NULL;
+
+DELETE FROM Deck
+WHERE deck_id =
+(
+    SELECT Deck.deck_id FROM Deck
+    Left JOIN Cards
+    ON Deck.deck_id = Cards.deck_id
+    WHERE Cards.deck_id IS NULL
+);
+
+
+
+SELECT Deck.deck_id FROM Deck
+Left JOIN Cards
+ON Deck.deck_id = Cards.deck_id
+WHERE Cards.deck_id IS NULL;
+
+UPDATE Cards
+SET deck_id = NULL
+WHERE user_id = 1 AND deck_id != 4;

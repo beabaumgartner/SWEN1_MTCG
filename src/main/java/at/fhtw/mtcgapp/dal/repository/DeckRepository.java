@@ -79,13 +79,71 @@ public class DeckRepository {
         {
             preparedStatement.setInt(1, user_id);
             preparedStatement.setInt(2, deck_id);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DataAccessException("Update Old-Cards for Deck Deck could not be executed", e);
+            throw new DataAccessException("Update Old-Cards for Deck could not be executed", e);
         }
     }
 
-    public Collection<Card> getDeckByUserId(Integer user_id)
+    public void removeOldDeck(Integer user_id)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                        UPDATE Cards
+                        SET deck_id = NULL
+                        WHERE user_id = ?;
+                             """))
+        {
+            preparedStatement.setInt(1, user_id);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Remove Old-Deck not be executed", e);
+        }
+    }
+
+    public void deleteOldDeck(Integer deck_id)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                             DELETE FROM Deck
+                                WHERE deck_id = ?
+                             """))
+        {
+            preparedStatement.setInt(1, deck_id);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Delete old Deck Deck could not be executed", e);
+        }
+    }
+
+    public Integer getDeckIdByUserId(Integer user_id)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+               SELECT deck_id From Cards 
+                   WHERE user_id = ? 
+                   AND deck_id IS NOT NULL;
+                """))
+        {
+            preparedStatement.setInt(1, user_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(!resultSet.next())
+            {
+                return null;
+            }
+
+            return resultSet.getInt(1);
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Get Deck-Id by user-id could not be executed", e);
+        }
+    }
+
+    public ArrayList<Card> getDeckByUserId(Integer user_id)
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
@@ -96,7 +154,7 @@ public class DeckRepository {
         {
             preparedStatement.setInt(1, user_id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            Collection<Card> deckCardList = new ArrayList<>();
+            ArrayList<Card> deckCardList = new ArrayList<>();
 
             while(resultSet.next())
             {

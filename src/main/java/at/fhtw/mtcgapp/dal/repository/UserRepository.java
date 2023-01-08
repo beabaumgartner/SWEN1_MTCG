@@ -1,20 +1,14 @@
 package at.fhtw.mtcgapp.dal.repository;
 
-import at.fhtw.mtcgapp.dal.DatabaseConnection;
 import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
-import at.fhtw.mtcgapp.model.Card;
 import at.fhtw.mtcgapp.model.User;
 import at.fhtw.mtcgapp.model.UserCredentials;
 import at.fhtw.mtcgapp.model.UserData;
-import at.fhtw.sampleapp.model.Weather;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class UserRepository {
     private UnitOfWork unitOfWork;
@@ -76,6 +70,31 @@ public class UserRepository {
         }
     }
 
+    public User getUserByUserId(Integer user_id) {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                SELECT user_id, username from Users Where user_id = ?
+                """))
+        {
+            preparedStatement.setInt(1, user_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(!resultSet.next())
+            {
+                throw new NoDataException("User not found by user-id or no userdata exist.");
+            }
+
+            User user = new User(
+                    resultSet.getInt("user_id"),
+                    resultSet.getString("username"),
+                    null);
+            return user;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Select could not be executed", e);
+        }
+    }
+
     public void updateUser(String username, UserData userData) {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
@@ -103,7 +122,7 @@ public class UserRepository {
         }
     }
 
-    public Integer getUserByCardId(String card_id) {
+    public Integer getUserIdByCardId(String card_id) {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
                              SELECT * FROM Cards
