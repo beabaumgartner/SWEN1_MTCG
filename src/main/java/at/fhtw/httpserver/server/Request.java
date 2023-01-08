@@ -13,7 +13,6 @@ public class Request {
     private String params;
     private HeaderMap headerMap =  new HeaderMap();
     private String body;
-    private String authorization;
 
     public String getServiceRoute(){
         if (this.pathParts == null ||
@@ -103,7 +102,4 @@ public class Request {
         this.pathParts = pathParts;
     }
 
-    public String getAuthorization() { return authorization; }
-
-    public void setAuthorization(String authorization) { this.authorization = authorization; }
 }

@@ -168,6 +168,7 @@ public class DeckController extends Controller {
 
             new SessionRepository(unitOfWork).checkIfTokenIsValid(request);
             int user_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
+            Integer oldDeck_id = new DeckRepository(unitOfWork).getDeckIdByUserId(user_id);
             int deck_id = new DeckRepository(unitOfWork).createDeck(user_id);
 
             for(String userCard : userCards)
@@ -176,6 +177,10 @@ public class DeckController extends Controller {
             }
 
             new DeckRepository(unitOfWork).updateOldCardDeck(user_id, deck_id);
+            if(oldDeck_id != null)
+            {
+                new DeckRepository(unitOfWork).deleteOldDeck(oldDeck_id);
+            }
 
             unitOfWork.commitTransaction();
 

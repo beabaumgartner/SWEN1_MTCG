@@ -6,9 +6,8 @@ import at.fhtw.httpserver.http.Method;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.httpserver.server.Service;
-import at.fhtw.mtcgapp.service.game.stats.StatsController;
 
-public class BattlesService implements Service {
+public class BattlesService implements Service{
     private final BattlesController battlesController;
 
     public BattlesService()
@@ -17,8 +16,8 @@ public class BattlesService implements Service {
     }
     @Override
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.GET) {
-            //return this.battlesController.getCardsFromUser(request);
+        if (request.getMethod() == Method.POST) {
+            return this.battlesController.manageBattle(request);
         }
 
         return new Response(

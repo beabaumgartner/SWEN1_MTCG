@@ -2,10 +2,10 @@ package at.fhtw.mtcgapp.dal.repository;
 
 import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.exception.DataAccessException;
+import at.fhtw.mtcgapp.exception.DataUpdateException;
 import at.fhtw.mtcgapp.exception.NoDataException;
 import at.fhtw.mtcgapp.exception.NotFoundException;
 import at.fhtw.mtcgapp.model.Card;
-import at.fhtw.mtcgapp.model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +29,9 @@ public class CardRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                       SELECT card_id, card_name, damage From Cards WHERE user_id = ?;
+                       SELECT card_id, card_name, damage From Cards 
+                       WHERE user_id = ?
+                       Order BY card_id DESC;
                 """))
         {
             preparedStatement.setInt(1, user_id);
@@ -62,7 +64,9 @@ public class CardRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                       SELECT card_id, card_name, damage From Cards WHERE user_id = ? AND deck_id IS NOT NULL;
+                       SELECT card_id, card_name, damage From Cards 
+                       WHERE user_id = ? AND deck_id IS NOT NULL
+                       Order BY card_id DESC;
                 """))
         {
             preparedStatement.setInt(1, user_id);
@@ -88,6 +92,29 @@ public class CardRepository {
 
         } catch (SQLException e) {
             throw new DataAccessException("Create Package could not be executed", e);
+        }
+    }
+
+    public void updateCardOwner(Integer user_id, String card_id)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                    UPDATE Cards
+                    SET user_id = ?
+                    WHERE card_id = ?
+                """))
+        {
+            preparedStatement.setInt(1, (user_id));
+            preparedStatement.setString(2, (card_id));
+            Integer updatedRows = preparedStatement.executeUpdate();
+
+            if(updatedRows < 1)
+            {
+                throw new DataUpdateException("Card owner could not be updated");
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Finish battle with second player could not be executed", e);
         }
     }
 

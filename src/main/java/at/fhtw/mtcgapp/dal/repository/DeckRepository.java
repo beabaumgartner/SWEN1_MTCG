@@ -4,7 +4,9 @@ import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.exception.DataAccessException;
 import at.fhtw.mtcgapp.exception.DataUpdateException;
 import at.fhtw.mtcgapp.exception.InvalidItemException;
+import at.fhtw.mtcgapp.exception.NoDataException;
 import at.fhtw.mtcgapp.model.Card;
+import at.fhtw.mtcgapp.model.UserStats;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -77,17 +79,53 @@ public class DeckRepository {
         {
             preparedStatement.setInt(1, user_id);
             preparedStatement.setInt(2, deck_id);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DataAccessException("Update Old-Cards for Deck Deck could not be executed", e);
+            throw new DataAccessException("Update Old-Cards for Deck could not be executed", e);
         }
     }
 
-    /*public Integer getDeckIdByUserId(Integer user_id)
+    public void removeOldDeck(Integer user_id)
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-               SELECT card_id, card_name, damage From Cards WHERE user_id = ? AND deck_id IS NOT NULL;
+                        UPDATE Cards
+                        SET deck_id = NULL
+                        WHERE user_id = ?;
+                             """))
+        {
+            preparedStatement.setInt(1, user_id);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Remove Old-Deck not be executed", e);
+        }
+    }
+
+    public void deleteOldDeck(Integer deck_id)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                             DELETE FROM Deck
+                                WHERE deck_id = ?
+                             """))
+        {
+            preparedStatement.setInt(1, deck_id);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Delete old Deck Deck could not be executed", e);
+        }
+    }
+
+    public Integer getDeckIdByUserId(Integer user_id)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+               SELECT deck_id From Cards 
+                   WHERE user_id = ? 
+                   AND deck_id IS NOT NULL;
                 """))
         {
             preparedStatement.setInt(1, user_id);
@@ -95,16 +133,48 @@ public class DeckRepository {
 
             if(!resultSet.next())
             {
-                //if no Deck exists, create new STack and return id
-                return createDeck(user_id);
-            }
-            else
-            {
-                return resultSet.getInt("stack_id");
+                return null;
             }
 
+            return resultSet.getInt(1);
+
         } catch (SQLException e) {
-            throw new DataAccessException("Get dec-id could not be executed", e);
+            throw new DataAccessException("Get Deck-Id by user-id could not be executed", e);
         }
-    }*/
+    }
+
+    public ArrayList<Card> getDeckByUserId(Integer user_id)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+               SELECT card_id, card_name, damage From Cards 
+                   WHERE user_id = ? 
+                   AND deck_id IS NOT NULL;
+                """))
+        {
+            preparedStatement.setInt(1, user_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ArrayList<Card> deckCardList = new ArrayList<>();
+
+            while(resultSet.next())
+            {
+                Card card = new Card(
+                        resultSet.getString("card_id"),
+                        resultSet.getString("card_name"),
+                        resultSet.getInt("damage")
+                );
+                deckCardList.add(card);
+            }
+
+            if(deckCardList.isEmpty())
+            {
+                throw new NoDataException("User does not have any cards in his deck");
+            }
+
+            return deckCardList;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Get deck by user-id could not be executed", e);
+        }
+    }
 }
