@@ -48,7 +48,7 @@ public class UserRepository {
     public UserData getUserDataByUsername(String username) {
         try (PreparedStatement preparedStatement =
                  this.unitOfWork.prepareStatement("""
-                SELECT name, bio, image from Users Where username = ?
+                SELECT name, bio, image FROM Users WHERE username = ?
                 """))
         {
             preparedStatement.setString(1, username);
@@ -56,7 +56,7 @@ public class UserRepository {
 
             if(!resultSet.next())
             {
-                throw new NoDataException("User not found or no userdata exist.");
+                throw new NoDataException("User not found or no userdata exists.");
             }
 
             UserData user = new UserData(
@@ -67,6 +67,26 @@ public class UserRepository {
 
         } catch (SQLException e) {
             throw new DataAccessException("Select could not be executed", e);
+        }
+    }
+
+    public String getUsernameByUserId(Integer user_id) {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                SELECT username FROM Users WHERE user_id = ?
+                """))
+        {
+            preparedStatement.setInt(1, user_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(!resultSet.next())
+            {
+                throw new NoDataException("User not found or no userdata exists.");
+            }
+            return resultSet.getString(1);
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Get username could not be executed", e);
         }
     }
 

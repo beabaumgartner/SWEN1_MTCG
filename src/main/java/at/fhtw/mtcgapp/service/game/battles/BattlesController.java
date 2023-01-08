@@ -188,7 +188,7 @@ public class BattlesController extends Controller {
             return new Response(
                     HttpStatus.NO_CONTENT,
                     ContentType.PLAIN_TEXT,
-                    "No Battle-Log was found"
+                    "User does not have any cards in his deck"
             );
         } catch (NoPlayerFoundException e) {
             unitOfWork.rollbackTransaction();

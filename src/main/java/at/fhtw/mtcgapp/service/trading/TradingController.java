@@ -255,10 +255,10 @@ public class TradingController extends Controller {
             TradingDeal tradingDeal = new TradingRepository(unitOfWork).getTradingDealByTradingId(trading_id);
             Integer sellerUser_id = new UserRepository(unitOfWork).getUserIdByCardId(tradingDeal.getCard_to_trade());
 
-            //ptüft ob trade gültig ist
+            //check if trade is valid
             new TradingRepository(unitOfWork).checkOfferedCardForTrading(tradingDeal, buyerUser_id, sellerUser_id, offeredCardId);
 
-            // tauscht die Karten zu den jeweiligen Usern
+            // changing cardOwner
             new TradingRepository(unitOfWork).updateCardForCarryOutTradingDeal(buyerUser_id, sellerUser_id, tradingDeal.getCard_to_trade());
             new TradingRepository(unitOfWork).updateCardForCarryOutTradingDeal(sellerUser_id, buyerUser_id, offeredCardId);
 
