@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class Card {
     @JsonAlias({"Id"})
     private String card_id;
@@ -15,6 +17,8 @@ public class Card {
     private String card_type;
     @JsonIgnore
     private String element_type;
+    @JsonIgnore
+    private String battle_log;
 
 
     // Jackson needs the default constructor
@@ -23,6 +27,7 @@ public class Card {
         this.name = name;
         setCardType();
         setElementType();
+        battle_log = "";
     }
 
     public Card(String card_id, String name, Integer damage) {
@@ -31,6 +36,7 @@ public class Card {
         this.damage = damage;
         setCardType();
         setElementType();
+        battle_log = "";
     }
 
     public String getCard_id() {

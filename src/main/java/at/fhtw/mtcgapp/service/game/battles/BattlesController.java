@@ -6,17 +6,14 @@ import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.mtcgapp.controller.Controller;
 import at.fhtw.mtcgapp.dal.UnitOfWork;
-import at.fhtw.mtcgapp.dal.repository.BattlesRepository;
-import at.fhtw.mtcgapp.dal.repository.CardRepository;
-import at.fhtw.mtcgapp.dal.repository.DeckRepository;
-import at.fhtw.mtcgapp.dal.repository.SessionRepository;
+import at.fhtw.mtcgapp.dal.repository.*;
 import at.fhtw.mtcgapp.exception.*;
+import at.fhtw.mtcgapp.model.Battle;
 import at.fhtw.mtcgapp.model.Card;
+import at.fhtw.mtcgapp.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class BattlesController extends Controller {
     public Response manageBattle(Request request) {
@@ -34,13 +31,15 @@ public class BattlesController extends Controller {
                 int battle_lobby_id = new BattlesRepository(unitOfWork).createBattleLobby(firstPlayerUser_id);
                 unitOfWork.commitTransaction();
 
+                // new uow is necessary -> second player has to see the updated lobby
                 UnitOfWork secondUnitOfWork = new UnitOfWork();
-
                 boolean isBattleDone = false;
+                // finish after count = timeout -> no player found
                 int count = 0;
-                int timeout = 100;
+                int timeout = 30;
 
                 do {
+                    // checks every sec the battle status
                     Thread.sleep(1000);
                     isBattleDone = new BattlesRepository(secondUnitOfWork).isBattleDone(battle_lobby_id);
                     ++count;
@@ -48,38 +47,109 @@ public class BattlesController extends Controller {
                 } while (!isBattleDone && count < timeout);
 
                 if (isBattleDone) {
-                    //battle_log = new BattlesRepository(secondUnitOfWork).getBattleLog(battle_lobby_id);
+                    // if battle is done -> response is battle log
+                    battle_log = new BattlesRepository(secondUnitOfWork).getBattleLog(battle_lobby_id);
                 } else if (count >= timeout) {
+                    //deletes the empty lobby if no second player was found
+                    new BattlesRepository(secondUnitOfWork).deleteEmptyBattleById(battle_lobby_id);
+                    secondUnitOfWork.commitTransaction();
                     throw new NoPlayerFoundException("No player found");
                 }
-                secondUnitOfWork.commitTransaction();
 
+                secondUnitOfWork.commitTransaction();
             }
             else // second Player
             {
+                int maxRounds = 100;
                 int secondPlayerUser_id = new SessionRepository(unitOfWork).getUserIdByToken(request);
                 int battle_lobby_id = new BattlesRepository(unitOfWork).JoinBattleLobbyWithSecondPlayer(secondPlayerUser_id);
-                int firstPlayerUser_id = new BattlesRepository(unitOfWork).getFirstUserIdFromBattle(battle_lobby_id);
+
+                List<User> usersFromBattle = new BattlesRepository(unitOfWork).getUsersFromBattle(battle_lobby_id);
+                List<Card> firstPlayerDeck = new DeckRepository(unitOfWork).getDeckByUserId(usersFromBattle.get(0).getId());
+                List<Card> secondPlayerDeck = new DeckRepository(unitOfWork).getDeckByUserId(usersFromBattle.get(1).getId());
+
+                // battle logic in class -> method calculateWinner(List<Card> deckCardsForRound)
+                Battle battle = new Battle(battle_lobby_id, usersFromBattle.get(0), usersFromBattle.get(1));
+
+                for(int i = 1; i < maxRounds + 1; ++i)
+                {
+                    if(firstPlayerDeck.isEmpty() || secondPlayerDeck.isEmpty())
+                    {
+                        break;
+                    }
+                    Collections.shuffle(firstPlayerDeck);
+                    Collections.shuffle(secondPlayerDeck);
+
+                    battle.setBattleLog("\nRound " + i + ":\n");
+
+                    //deck cards for round
+                    List<Card> deckCardsForRound = new ArrayList<>();
+                    deckCardsForRound.add(firstPlayerDeck.get(0));
+                    deckCardsForRound.add(secondPlayerDeck.get(0));
+
+                    String winner = battle.calculateWinner(deckCardsForRound);
+
+                    // handle win and change cards in List
+                    if(winner.equals("playerA"))
+                    {
+                        battle.setBattleLog("=> " + deckCardsForRound.get(0).getName() + " wins");
+                        Card deckCard = secondPlayerDeck.get(0);
+                        secondPlayerDeck.remove(deckCard);
+                        firstPlayerDeck.add(deckCard);
+                    }
+                    else if (winner.equals("playerB"))
+                    {
+                        battle.setBattleLog("=> " + deckCardsForRound.get(1).getName() + " wins");
+                        Card deckCard = firstPlayerDeck.get(0);
+                        firstPlayerDeck.remove(deckCard);
+                        secondPlayerDeck.add(deckCard);
+                    }
+                    else if (winner.equals("draw"))
+                    {
+                        battle.setBattleLog("=> Draw");
+                    }
+                    else
+                    {
+                        throw new NoDataException("No winner could be calculated");
+                    }
+                }
+
+                //change card owner in db
+                if(!firstPlayerDeck.isEmpty())
+                {
+                    for(Card card : firstPlayerDeck)
+                    {
+                        new CardRepository(unitOfWork).updateCardOwner(usersFromBattle.get(0).getId(), card.getCard_id());
+                    }
+                }
+                if(!secondPlayerDeck.isEmpty())
+                {
+                    for(Card card : secondPlayerDeck)
+                    {
+                        new CardRepository(unitOfWork).updateCardOwner(usersFromBattle.get(1).getId(), card.getCard_id());
+                    }
+                }
+
+                //update Deck
+                Integer playerAoldDeck_id = new DeckRepository(unitOfWork).getDeckIdByUserId(usersFromBattle.get(0).getId());
+                Integer playerBoldDeck_id = new DeckRepository(unitOfWork).getDeckIdByUserId(usersFromBattle.get(1).getId());
+                new DeckRepository(unitOfWork).removeOldDeck(usersFromBattle.get(0).getId());
+                new DeckRepository(unitOfWork).removeOldDeck(usersFromBattle.get(1).getId());
+
+                if(playerAoldDeck_id != null)
+                {
+                    new DeckRepository(unitOfWork).deleteOldDeck(playerAoldDeck_id);
+                }
+                if(playerBoldDeck_id != null)
+                {
+                    new DeckRepository(unitOfWork).deleteOldDeck(playerBoldDeck_id);
+                }
+
+                // battle log
+                battle_log = battle.getBattle_log();
                 new BattlesRepository(unitOfWork).updateBattleStatusToFinished(battle_lobby_id);
-                // battle logic !!!!!!!!!!!!!
+                new BattlesRepository(unitOfWork).createBattleLog(battle_log, battle_lobby_id);
 
-
-                Collection<Card> firstPlayerDeck = new DeckRepository(unitOfWork).getDeckByUserId(firstPlayerUser_id);
-                Collection<Card> secondPlayerDeck = new DeckRepository(unitOfWork).getDeckByUserId(secondPlayerUser_id);
-
-                Random rnd = new Random();
-                int i = rnd.nextInt(firstPlayerDeck.size());
-                /*Card firstPlayerCarrForRound = firstPlayerDeck.toArray()[i];
-                Card card = firstPlayerDeck.toArray()[0]
-                Objects.checkIndex(firstPlayerDeck);*/
-
-
-
-
-
-
-
-                //battle_log = new BattlesRepository(secondUnitOfWork).getBattleLog(battle_lobby_id);
                 unitOfWork.commitTransaction();
             }
 

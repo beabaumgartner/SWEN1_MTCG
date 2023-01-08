@@ -22,6 +22,11 @@ public class PackageController extends Controller{
             new SessionRepository(unitOfWork).checkIfTokenIsAdmin(request);
 
             Card cards[] = this.getObjectMapper().readValue(request.getBody(), Card[].class);
+            if(cards.length != 5)
+            {
+                throw new InvalidDataException("The provided package did not include the required amount of cards");
+            }
+
             new PackageRepository(unitOfWork).createPackage(cards);
 
             unitOfWork.commitTransaction();
@@ -65,6 +70,16 @@ public class PackageController extends Controller{
                     HttpStatus.FORBIDDEN,
                     ContentType.PLAIN_TEXT,
                     "Provided user is not \"admin\""
+            );
+        }
+        catch (InvalidDataException e)
+        {
+            unitOfWork.rollbackTransaction();
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.BAD_REQUEST,
+                    ContentType.PLAIN_TEXT,
+                    "The provided package did not include the required amount of cards"
             );
         }
         catch (DataAccessException e)

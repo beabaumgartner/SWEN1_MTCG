@@ -1,9 +1,7 @@
 package at.fhtw.mtcgapp.dal.repository;
 
 import at.fhtw.mtcgapp.dal.UnitOfWork;
-import at.fhtw.mtcgapp.exception.DataAccessException;
-import at.fhtw.mtcgapp.exception.InvalidLoginDataException;
-import at.fhtw.mtcgapp.exception.NoDataException;
+import at.fhtw.mtcgapp.exception.*;
 import at.fhtw.mtcgapp.model.Card;
 import at.fhtw.mtcgapp.model.UserCredentials;
 import at.fhtw.mtcgapp.model.UserStats;
@@ -51,6 +49,33 @@ public class StatsRepository {
 
         } catch (SQLException e) {
             throw new DataAccessException("Get User-Stats could not be executed", e);
+        }
+    }
+
+    public void updateStatsByUserId(Integer user_id, UserStats userStats)
+    {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                    UPDATE Users
+                    SET elo = ?,
+                        wins = ?,
+                        losses = ?
+                    WHERE user_id = ?;
+                """))
+        {
+            preparedStatement.setInt(1, userStats.getElo());
+            preparedStatement.setInt(2, userStats.getWins());
+            preparedStatement.setInt(3, userStats.getLosses());
+            preparedStatement.setInt(4, user_id);
+            int updatedRow = preparedStatement.executeUpdate();
+
+            if(updatedRow < 1)
+            {
+                throw new DataUpdateException("User-Stats could not be updated");
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Update User-Stats could not be executed", e);
         }
     }
 }

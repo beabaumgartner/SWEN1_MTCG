@@ -253,7 +253,7 @@ public class TradingController extends Controller {
             String trading_id = request.getPathParts().get(1);
             String offeredCardId = this.getObjectMapper().readValue(request.getBody(), String.class);
             TradingDeal tradingDeal = new TradingRepository(unitOfWork).getTradingDealByTradingId(trading_id);
-            Integer sellerUser_id = new UserRepository(unitOfWork).getUserByCardId(tradingDeal.getCard_to_trade());
+            Integer sellerUser_id = new UserRepository(unitOfWork).getUserIdByCardId(tradingDeal.getCard_to_trade());
 
             //ptüft ob trade gültig ist
             new TradingRepository(unitOfWork).checkOfferedCardForTrading(tradingDeal, buyerUser_id, sellerUser_id, offeredCardId);
