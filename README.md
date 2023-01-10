@@ -7,7 +7,7 @@
 Die Postgres-Datenbank wird mittels pg-admin aufgebaut und direkt in IntelliJ eine Verbindung aufgebaut.
 Anstatt eines dockers gibt es im Ordner databse, ausführbare sql-Statments welche die DB erstellen, löschen oder reseten können.
 
-![](.\database\DB_diagramm.jpg)
+![](/database/DB_diagramm.jpg)
 
 Der source Code ist in main und test gegliedert.
 
@@ -18,7 +18,7 @@ Des weiteren befindet sich in ./documents/executables/integration_test_postman, 
 
 #### Sourcecode (Main)
 
-![](.\documents\specifications\server_diagramm.jpg)
+![](/documents/specifications/server_diagramm.jpg)
 
 HTTP-Server: Der httpserver wurde aus dem Moodle-Beispiel übernommen. Dabei wurden Kleinigkeiten hinzugefügt, um Beispielsweise den Contens-Type oder den Authorisierungs-Token zu erhalten.
 Dieser implementiert einen Server Listener welche auf herinkommende Cliends hört und diese in eigene Threads auslagert.
@@ -43,7 +43,7 @@ Dieser Request benötigt einen gültigen Authentication-Token und braucht kein b
 GET /battlelogs
 ```
 <div style="float: right; width: 50%; margin-left: 4%; margin-top: -15px;">
-  <p><img width="460" src=".\documents\executables\integration_test_postman\images\battlelogs.png" width="300px"/></p>
+  <p><img width="460" src="/documents/executables/integration_test_postman/images/battlelogs.png" width="300px"/></p>
   <p> <br> </p>
 </div>
 <div tyle="float: right; width: 50%; margin-left: 4%;">
@@ -82,7 +82,7 @@ GET /battlelogs/{battlelog_id}
 ```
 
 <div style="float: right; width: 50%; margin-left: 4%; margin-top: -15px;">
-  <p><img width="460" src=".\documents\executables\integration_test_postman\images\battlelogs_battlelog_id.png" width="300px"/></p>
+  <p><img width="460" src="/documents/executables/integration_test_postman/images/battlelogs_battlelog_id.png" width="300px"/></p>
   <p> <br> </p>
 </div>
 <div tyle="float: right; width: 50%; margin-left: 4%;">
