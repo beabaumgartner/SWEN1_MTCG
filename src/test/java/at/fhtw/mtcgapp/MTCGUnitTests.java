@@ -348,7 +348,7 @@ class MTCGUnitTests {
         assertEquals(200, response.getStatus());
     }
     @Test
-    @Order(15)
+    @Order(14)
     void testGetTradingsWithoutAvailableTradings() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -364,7 +364,7 @@ class MTCGUnitTests {
         assertEquals(400, response.getStatus());
     }
     @Test
-    @Order(16)
+    @Order(15)
     void testCreateTradingDeal() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -389,7 +389,7 @@ class MTCGUnitTests {
         assertEquals(201, response.getStatus());
     }
     @Test
-    @Order(17)
+    @Order(16)
     void testCreateTradingDealWithoutBeTheOwnerOfCard() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -414,7 +414,7 @@ class MTCGUnitTests {
         assertEquals(403, response.getStatus());
     }
     @Test
-    @Order(18)
+    @Order(17)
     void testCreateTradingDealAndCardIsInDeck() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -439,7 +439,7 @@ class MTCGUnitTests {
         assertEquals(403, response.getStatus());
     }
     @Test
-    @Order(19)
+    @Order(18)
     void testCarryOutTradingWithWrongCardOwner() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -457,7 +457,7 @@ class MTCGUnitTests {
         assertEquals(403, response.getStatus());
     }
     @Test
-    @Order(20)
+    @Order(19)
     void testCarryOutTrading() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -475,7 +475,7 @@ class MTCGUnitTests {
         assertEquals(200, response.getStatus());
     }
     @Test
-    @Order(21) // test if user can create a deal with gained card from trade
+    @Order(20) // test if user can create a deal with gained card from trade
     void testCreateTradingAnotherDeal() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -500,7 +500,7 @@ class MTCGUnitTests {
         assertEquals(201, response.getStatus());
     }
     @Test
-    @Order(22)
+    @Order(21)
     void testCarryOutTradingWithWrongTradingId() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -518,7 +518,7 @@ class MTCGUnitTests {
         assertEquals(404, response.getStatus());
     }
     @Test
-    @Order(23)
+    @Order(22)
     void testCarryOutTradingWithWrongCardStats() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -536,7 +536,7 @@ class MTCGUnitTests {
         assertEquals(403, response.getStatus());
     }
     @Test
-    @Order(24)
+    @Order(23)
     void testDeleateTradingDealWithWrongOwner() {
         TradingService tradingService = new TradingService();
         Request request = new Request();
@@ -570,7 +570,7 @@ class MTCGUnitTests {
         assertEquals(200, response.getStatus());
     }
     @Test
-    @Order(24)
+    @Order(25)
     void testBattleForUserAAndB() throws InterruptedException {
         Request request1 = new Request();
         Request request2 = new Request();
@@ -601,7 +601,7 @@ class MTCGUnitTests {
         assertEquals(200, response2.getStatus());
     }
     @Test
-    @Order(25) //unique feature
+    @Order(26) //unique feature
     void testGetSpecificBattlelog() {
         BattlelogsService battlelogsService = new BattlelogsService();
         Request request = new Request();
