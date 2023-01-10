@@ -17,10 +17,10 @@ CREATE TABLE Users (
     name VARCHAR DEFAULT NULL,
     bio VARCHAR DEFAULT NULL,
     image VARCHAR DEFAULT NULL,
-    elo INT DEFAULT 100,
-    wins INT Default 0,
-    losses INT Default 0,
-    coins INT Default 20,
+    elo INT NOT NULL DEFAULT 100,
+    wins INT NOT NULL Default 0,
+    losses INT NOT NULL Default 0,
+    coins INT NOT NULL Default 20,
     password VARCHAR NOT NULL
 );
 
@@ -50,24 +50,24 @@ CREATE TABLE Deck (
 );
 
 CREATE TABLE Trading (
-trading_id VARCHAR PRIMARY KEY,
-card_to_trade VARCHAR NOT NULL,
-card_type VARCHAR NOT NULL,
-minimum_damage INT NOT NULL
+    trading_id VARCHAR PRIMARY KEY,
+    card_to_trade VARCHAR NOT NULL,
+    card_type VARCHAR NOT NULL,
+    minimum_damage INT NOT NULL
 );
 
 CREATE TABLE Battle (
-battle_id SERIAL PRIMARY KEY,
-user1_id INT NULL,
-user2_id INT NULL,
-battle_status BOOLEAN DEFAULT FALSE,
-timestamp TIMESTAMP  NOT NULL DEFAULT (NOW() + interval '30 seconds')
+    battle_id SERIAL PRIMARY KEY,
+    user1_id INT NULL,
+    user2_id INT NULL,
+    battle_status BOOLEAN DEFAULT FALSE,
+    active_battle_timestamp TIMESTAMP  NOT NULL DEFAULT (NOW() + interval '30 seconds')
 );
 
 CREATE TABLE Battle_Log (
-battle_log_id SERIAL PRIMARY KEY,
-battle_id INT NOT NULL,
-log VARCHAR NULL
+    battle_log_id SERIAL PRIMARY KEY,
+    battle_id INT NOT NULL,
+    log VARCHAR NULL
 );
 
 -- alter tables

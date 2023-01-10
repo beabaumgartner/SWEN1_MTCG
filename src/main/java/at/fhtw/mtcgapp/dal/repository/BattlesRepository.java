@@ -52,7 +52,7 @@ public class BattlesRepository {
                         WHERE user1_id IS NOT NULL
                         AND user2_id IS NULL
                         AND battle_status = false
-                        AND timestamp > NOW();
+                        AND active_battle_timestamp > NOW();
                              """))
         {
             ResultSet resultSet = preparedStatement.executeQuery();

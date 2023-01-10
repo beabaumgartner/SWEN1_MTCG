@@ -132,7 +132,7 @@ public class BattlelogsController extends Controller {
             return new Response(
                     HttpStatus.NOT_FOUND,
                     ContentType.PLAIN_TEXT,
-                    "No Battle log found"
+                    "No Battle log found with specific battlelog-id"
             );
         }
         catch (DataAccessException e)

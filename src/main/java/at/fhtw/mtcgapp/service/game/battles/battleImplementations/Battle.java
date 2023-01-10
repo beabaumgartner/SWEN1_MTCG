@@ -5,6 +5,8 @@ import at.fhtw.mtcgapp.model.User;
 
 import java.util.List;
 
+// help class to outsource the battle logic and calculates the damage for
+// the cards and returns the resulting winner of the round
 public class Battle {
     Integer battle_id;
     User playerA;
@@ -33,18 +35,21 @@ public class Battle {
                 BplayerDeckCard.getName() + " (" + BplayerDeckCard.getDamage() + " Damage)" +
                 "\n        ");
 
+        // checks if any specialities are given between the cards (if true it's not necessary to calculate the damage)
         String winner = manageSpecialities(AplayerDeckCard ,BplayerDeckCard);
         if(winner != null)
         {
             return winner;
         }
 
+        //calculate winner if there is one spell card
         if(AplayerDeckCard.getCardType().equals("spell") ||
                 BplayerDeckCard.getCardType().equals("spell"))
         {
             return calculateSpellFight(AplayerDeckCard, BplayerDeckCard);
         }
 
+        // if it's just a monster battle, calculate the normal damage
         return calculateFight(AplayerDeckCard.getDamage(), BplayerDeckCard.getDamage());
     }
 
@@ -144,6 +149,7 @@ public class Battle {
                 break;
         }
 
+        //calculate the damage with de calculated spell damage
         return calculateFight(AplayerDamage, BplayerDamage);
     }
 

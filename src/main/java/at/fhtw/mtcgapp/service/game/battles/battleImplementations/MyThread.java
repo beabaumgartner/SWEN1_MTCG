@@ -4,7 +4,7 @@ import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.mtcgapp.service.game.battles.BattlesService;
 
-//For Tests
+//help class to test battle service for Unit-Tests
 public class MyThread implements Runnable{
     private Response response;
     private Request request;
