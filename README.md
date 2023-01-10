@@ -34,6 +34,7 @@ Dabei habe ich gelernt wie ein HTTP-Server aufgebaut wird, wie eine Request und 
 Ich habe in erster-Linie die Routen der Services ausgetestet und die zu erwartende Respons abgefragt. Dabei habe ich auch mittels der Unittests ein Integrations Test geschrieben, welcher mit den verschiedenen Test mögliche Use-cases testen kann.
 Während dem Entwickeln, wurde oft auch das Open API Postman genuntzt und für diese auch Integration Tests erstellt welche in .\documents\executables\integration_test_postman zu finden sind.
 Zudem wurde das CURL-Script mit einem "Enter Key to close program" versehen. Das CURL-Script ist in .\documents\executables zu finden.
+Vor allem das Battle-Service ist kritisch und wurde deswegen mit einem Unittest abgefragt.
 
 ### Unique Feature
 Das eingebaute unique feature beinhaltet ein neues Service mit der Service-Route battlelogs. Dabei können zwei verschiedene GET-Requests abgefragt werde.
