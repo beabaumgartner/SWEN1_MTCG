@@ -5,10 +5,12 @@ import at.fhtw.httpserver.http.Method;
 import at.fhtw.httpserver.server.HeaderMap;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
+import at.fhtw.mtcgapp.service.battlelogs.BattlelogsService;
 import at.fhtw.mtcgapp.service.deck.DeckService;
 import at.fhtw.mtcgapp.service.game.battles.battleImplementations.MyThread;
 import at.fhtw.mtcgapp.service.packages.PackageService;
 import at.fhtw.mtcgapp.service.session.SessionService;
+import at.fhtw.mtcgapp.service.trading.TradingService;
 import at.fhtw.mtcgapp.service.user.UserService;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -346,7 +348,195 @@ class MTCGUnitTests {
         assertEquals(200, response.getStatus());
     }
     @Test
-    @Order(14)
+    @Order(15)
+    void testGetTradingsWithoutAvailableTradings() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.GET);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic bea-mtcgToken");
+        request.setPathname("/tradings");
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("The request was fine, but there are no trading deals available", response.getContent());
+        assertEquals(400, response.getStatus());
+    }
+    @Test
+    @Order(16)
+    void testCreateTradingDeal() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.POST);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic simba-mtcgToken");
+        request.setPathname("/tradings");
+        request.setBody("" +
+                "{" +
+                "\"Id\": \"3faz85f64-5717-4562-b3fc-2c963f66afa6\", " +
+                "\"CardToTrade\": \"453fdsfrer34343443-4562-b3fc-2c963f66afa6\", " +
+                "\"Type\": \"monster\", " +
+                "\"MinimumDamage\": 15" +
+                "}"
+        );
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("Trading deal successfully created", response.getContent());
+        assertEquals(201, response.getStatus());
+    }
+    @Test
+    @Order(17)
+    void testCreateTradingDealWithoutBeTheOwnerOfCard() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.POST);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic simba-mtcgToken");
+        request.setPathname("/tradings");
+        request.setBody("" +
+                "{" +
+                "\"Id\": \"u3faz8rr5f64-5717-4562-b3fc-2c963f66afa6\", " +
+                "\"CardToTrade\": \"fd3444d4fs3f64-5717-4562-b3963f66afa6\", " +
+                "\"Type\": \"monster\", " +
+                "\"MinimumDamage\": 15" +
+                "}"
+        );
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("The deal contains a card that is not owned by the user or locked in the deck.", response.getContent());
+        assertEquals(403, response.getStatus());
+    }
+    @Test
+    @Order(18)
+    void testCreateTradingDealAndCardIsInDeck() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.POST);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic simba-mtcgToken");
+        request.setPathname("/tradings");
+        request.setBody("" +
+                "{" +
+                "\"Id\": \"tu3faz8r64-5717-4562-b3fc-2c963f66afa6\", " +
+                "\"CardToTrade\": \"135trgvvv-5717-4562-b3fc-2c963f66afa6\", " +
+                "\"Type\": \"monster\", " +
+                "\"MinimumDamage\": 15" +
+                "}"
+        );
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("The deal contains a card that is not owned by the user or locked in the deck.", response.getContent());
+        assertEquals(403, response.getStatus());
+    }
+    @Test
+    @Order(19)
+    void testCarryOutTradingWithWrongCardOwner() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.POST);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic simba-mtcgToken");
+        request.setPathname("/tradings/3faz85f64-5717-4562-b3fc-2c963f66afa6");
+        request.setBody("\"fd3444d4fs3f64-5717-4562-b3963f66afa6\"");
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("The offered card is not owned by the user, or the requirements are not met (Type, MinimumDamage), or the offered card is locked in the deck.", response.getContent());
+        assertEquals(403, response.getStatus());
+    }
+    @Test
+    @Order(20)
+    void testCarryOutTrading() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.POST);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic bea-mtcgToken");
+        request.setPathname("/tradings/3faz85f64-5717-4562-b3fc-2c963f66afa6");
+        request.setBody("\"fd3444d4fs3f64-5717-4562-b3963f66afa6\"");
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("Trading deal successfully executed.", response.getContent());
+        assertEquals(200, response.getStatus());
+    }
+    @Test
+    @Order(21) // test if user can create a deal with gained card from trade
+    void testCreateTradingAnotherDeal() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.POST);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic simba-mtcgToken");
+        request.setPathname("/tradings");
+        request.setBody("" +
+                "{" +
+                "\"Id\": \"3fazf64-571f7-4562-b3fc-2c963f66afa6\", " +
+                "\"CardToTrade\": \"fd3444d4fs3f64-5717-4562-b3963f66afa6\", " +
+                "\"Type\": \"spell\", " +
+                "\"MinimumDamage\": 100" +
+                "}"
+        );
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("Trading deal successfully created", response.getContent());
+        assertEquals(201, response.getStatus());
+    }
+    @Test
+    @Order(22)
+    void testCarryOutTradingWithWrongTradingId() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.POST);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic bea-mtcgToken");
+        request.setPathname("/tradings/u3fazfr64-571f7-4562-zzb3fc-2c963f66afa6");
+        request.setBody("\"453fdsfrer34343443-4562-b3fc-2c963f66afa6\"");
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("The provided deal ID was not found.", response.getContent());
+        assertEquals(404, response.getStatus());
+    }
+    @Test
+    @Order(23)
+    void testCarryOutTradingWithWrongCardStats() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.POST);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic bea-mtcgToken");
+        request.setPathname("/tradings/3fazf64-571f7-4562-b3fc-2c963f66afa6");
+        request.setBody("\"453fdsfrer34343443-4562-b3fc-2c963f66afa6\"");
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("The offered card is not owned by the user, or the requirements are not met (Type, MinimumDamage), or the offered card is locked in the deck.", response.getContent());
+        assertEquals(403, response.getStatus());
+    }
+    @Test
+    @Order(24)
     void testBattleForUserAAndB() throws InterruptedException {
         Request request1 = new Request();
         Request request2 = new Request();
@@ -375,5 +565,22 @@ class MTCGUnitTests {
         assertTrue(response2.getContent().startsWith("Battle: bea vs simba"));
         assertTrue(response2.getContent().endsWith("=> bea wins"));
         assertEquals(200, response2.getStatus());
+    }
+    @Test
+    @Order(25) //unique feature
+    void testGetSpecificBattlelog() {
+        BattlelogsService battlelogsService = new BattlelogsService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.GET);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic bea-mtcgToken");
+        request.setPathname("/battlelogs/1");
+
+
+        Response response = battlelogsService.handleRequest(request);
+
+        assertTrue(response.getContent().startsWith("Battle: bea vs simba"));
+        assertEquals(200, response.getStatus());
     }
 }

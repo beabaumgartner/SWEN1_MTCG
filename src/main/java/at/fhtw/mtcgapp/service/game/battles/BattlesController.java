@@ -115,7 +115,7 @@ public class BattlesController extends Controller {
                 //change gained cards and userstats if game result is not a draw
                 if (rounds < (maxRounds-1)) {
                     //change card owner in db if the new owner of the deck cards should be the winner
-                    /*if (!firstPlayerDeck.isEmpty()) {
+                    if (!firstPlayerDeck.isEmpty()) {
                         for (Card card : firstPlayerDeck) {
                             new CardRepository(unitOfWork).updateCardOwner(usersFromBattle.get(0).getId(), card.getCard_id());
                         }
@@ -137,7 +137,7 @@ public class BattlesController extends Controller {
                     }
                     if (playerBoldDeck_id != null) {
                         new DeckRepository(unitOfWork).deleteOldDeck(playerBoldDeck_id);
-                    }*/
+                    }
 
                     // update userStats
                     if(firstPlayerDeck.size() > secondPlayerDeck.size())

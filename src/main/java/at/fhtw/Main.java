@@ -13,8 +13,7 @@ import at.fhtw.mtcgapp.service.packages.PackageService;
 import at.fhtw.mtcgapp.service.session.SessionService;
 import at.fhtw.mtcgapp.service.trading.TradingService;
 import at.fhtw.mtcgapp.service.user.UserService;
-import at.fhtw.sampleapp.service.echo.EchoService;
-import at.fhtw.sampleapp.service.weather.WeatherService;
+
 
 import java.io.IOException;
 
@@ -31,8 +30,6 @@ public class Main {
     private static Router configureRouter()
     {
         Router router = new Router();
-        router.addService("/weather", new WeatherService());
-        router.addService("/echo", new EchoService());
         router.addService("/users", new UserService());
         router.addService("/sessions", new SessionService());
         router.addService("/packages", new PackageService());
