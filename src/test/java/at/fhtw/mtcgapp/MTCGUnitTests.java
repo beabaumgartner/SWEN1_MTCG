@@ -46,7 +46,7 @@ class MTCGUnitTests {
 
         assertEquals( "User successfully created", response.getContent());
         assertEquals(201, response.getStatus());
-        request.setBody("{\"Username\": \"admin\",\"Password\": \"admin\"}");
+        request.setBody("{\"Username\": \"admin\",\"Password\": \"istrator\"}");
         request.getHeaderMap().setContentLength(String.valueOf(request.getBody().length()));
         request.getHeaderMap().setContentTypeHeader(String.valueOf(ContentType.JSON));
 
@@ -100,7 +100,7 @@ class MTCGUnitTests {
         assertEquals("User login successful", response.getContent());
         assertEquals(200, response.getStatus());
 
-        request.setBody("{\"Username\": \"admin\",\"Password\": \"admin\"}");
+        request.setBody("{\"Username\": \"admin\",\"Password\": \"istrator\"}");
         request.getHeaderMap().setContentLength(String.valueOf(request.getBody().length()));
         request.getHeaderMap().setContentTypeHeader(String.valueOf(ContentType.JSON));
 

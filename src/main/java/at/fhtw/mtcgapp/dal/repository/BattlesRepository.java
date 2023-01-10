@@ -48,11 +48,12 @@ public class BattlesRepository {
     {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
-                SELECT COUNT(*) FROM Battle 
-                WHERE user1_id IS NOT NULL 
-                AND user2_id IS NULL
-                AND battle_status = false;
-                """))
+                    SELECT COUNT(*) FROM Battle
+                        WHERE user1_id IS NOT NULL
+                        AND user2_id IS NULL
+                        AND battle_status = false
+                        AND timestamp > NOW();
+                             """))
         {
             ResultSet resultSet = preparedStatement.executeQuery();
 

@@ -39,7 +39,7 @@ public class BattlesController extends Controller {
                 boolean isBattleDone = false;
                 // finish after count = timeout -> no player found
                 int count = 0;
-                int timeout = 30;
+                int timeout = 28;
 
                 do {
                     // checks every sec the battle status
@@ -114,8 +114,8 @@ public class BattlesController extends Controller {
 
                 //change gained cards and userstats if game result is not a draw
                 if (rounds < (maxRounds-1)) {
-                    //change card owner in db
-                    if (!firstPlayerDeck.isEmpty()) {
+                    //change card owner in db if the new owner of the deck cards should be the winner
+                    /*if (!firstPlayerDeck.isEmpty()) {
                         for (Card card : firstPlayerDeck) {
                             new CardRepository(unitOfWork).updateCardOwner(usersFromBattle.get(0).getId(), card.getCard_id());
                         }
@@ -137,7 +137,7 @@ public class BattlesController extends Controller {
                     }
                     if (playerBoldDeck_id != null) {
                         new DeckRepository(unitOfWork).deleteOldDeck(playerBoldDeck_id);
-                    }
+                    }*/
 
                     // update userStats
                     if(firstPlayerDeck.size() > secondPlayerDeck.size())
