@@ -2,17 +2,14 @@ package at.fhtw.mtcgapp.dal.repository;
 
 import at.fhtw.mtcgapp.dal.UnitOfWork;
 import at.fhtw.mtcgapp.exception.DataAccessException;
-import at.fhtw.mtcgapp.exception.DataUpdateException;
 import at.fhtw.mtcgapp.exception.InvalidItemException;
 import at.fhtw.mtcgapp.exception.NoDataException;
 import at.fhtw.mtcgapp.model.Card;
-import at.fhtw.mtcgapp.model.UserStats;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class DeckRepository {
     private UnitOfWork unitOfWork;
@@ -60,7 +57,7 @@ public class DeckRepository {
 
             if(updatedRows < 1)
             {
-                throw new InvalidItemException("At least one of the provided cards does not belong to the user or is not available.");
+                throw new InvalidItemException("At least one of the provided card with card-id: " + card_id +" does not belong to the user or is not available.");
             }
 
         } catch (SQLException e) {

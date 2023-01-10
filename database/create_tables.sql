@@ -51,7 +51,8 @@ CREATE TABLE Battle (
     battle_id SERIAL PRIMARY KEY,
     user1_id INT NULL,
     user2_id INT NULL,
-    battle_status BOOLEAN DEFAULT FALSE
+    battle_status BOOLEAN DEFAULT FALSE,
+    timestamp TIMESTAMP  NOT NULL DEFAULT (NOW() + interval '30 seconds')
 );
 
 CREATE TABLE Battle_Log (
@@ -114,4 +115,6 @@ ADD CONSTRAINT battle_id_fk
 FOREIGN KEY (battle_id)
 REFERENCES Battle (battle_id)
 ON DELETE CASCADE;
+
+SET TIMEZONE = 'Europe/Berlin';
 
