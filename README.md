@@ -5,7 +5,7 @@
 
 #### DB
 Die Postgres-Datenbank wird mittels pg-admin aufgebaut und direkt in IntelliJ eine Verbindung aufgebaut.
-Anstatt eines dockers gibt es im Ordner databse, ausführbare sql-Statments welche die DB erstellen, löschen oder reseten können.
+Anstatt eines dockers gibt es im Ordner "databse", ausführbare sql-Statments welche die DB erstellen, löschen oder reseten können.
 
 ![](/database/DB_diagramm.jpg)
 
@@ -13,32 +13,32 @@ Der source Code ist in main und test gegliedert.
 
 #### Testing
 Die Unittests sind gebündelt in mtcgapp vorhanden. Vor dem starten der Unittest wird empfohlen die Datenbank, im Ordner database mit dem file reset_db.sql auszuführen um etwaige vorhandene Daten zu löschen und die DB neu aufzubauen.
-Die Unittest sind so aufgebaut, dass sie ein eigenen Integration Test darstellen, da die Unittest mittels einer Ausführungsreinfolge gegliedert sind und mehrere aufeinander aufbauende Edge-Cases abprüfen (sowie das curl script, Bsp. um das battle Service abzufragen werden vorher enstprechende Unittests ausgeführt).
-Des weiteren befindet sich in ./documents/executables/integration_test_postman, postman exportierte files, welche in Postman selbst importiert werden können und automatisiert Service-Routen abfragen.
+Die Unittest sind so aufgebaut, dass sie ein eigenen Integration Test darstellen, da die Unittest mittels einer Ausführungsreinfolge gegliedert sind und mehrere aufeinander aufbauende Edge-Cases abprüfen (sowie das curl script, Bsp. um das battle Service abzufragen werden vorher entsprechende Unittests ausgeführt).
+Des weiteren befindet sich in "./documents/executables/integration_test_postman", postman exportierte files als Zip-Datei, welche in Postman selbst importiert werden können und automatisiert Service-Routen abfragen.
 
 #### Sourcecode (Main)
 
 ![](/documents/specifications/server_diagramm.jpg)
 
-HTTP-Server: Der httpserver wurde aus dem Moodle-Beispiel übernommen. Dabei wurden Kleinigkeiten hinzugefügt, um Beispielsweise den Contens-Type oder den Authorisierungs-Token zu erhalten.
-Dieser implementiert einen Server Listener welche auf herinkommende Cliends hört und diese in eigene Threads auslagert.
+HTTP-Server: Der httpserver wurde aus dem Moodle-Beispiel übernommen. Dabei wurden Kleinigkeiten hinzugefügt, um Beispielsweise den Content-Type oder den Authorisierungs-Token zu erhalten.
+Dieser implementiert einen Server Listener welche auf hereinkommende Clients hört und diese in eigene Threads auslagert.
 
 src-Code: Der Source-Code wurde mittels Services und der DAL umgesetzt. Das DAL wurde nach dem Unit Of Work Schema umgesetzt.
 
 ### Lessons Lerned
 Während dem Projekt habe ich gelernt, wie man eine Datenbank-Verbindung in IntelliJ aufbaut und eine entsprechende UOW gliedert.
-Dabei konnte ich mit den commit und rollback commands für Datenbanken das erste mal arbeiten.
+Dabei konnte ich mit den commit und rollback commands für Datenbanken das erste Mal arbeiten.
 Dabei habe ich gelernt wie ein HTTP-Server aufgebaut wird, wie eine Request und ein Respons aussieht und man diese aufgliedert, um Daten heraus zu lesen.
 
 ### Testing Decisions
-Ich habe in erster-Linie die Routen der Services ausgetestet und die zu erwartende Respons abgefragt. Dabei habe ich auch mittels der Unittests ein Integrations Test geschrieben, welcher mit den verschiedenen Test mögliche Use-cases testen kann.
-Während dem Entwickeln, wurde oft auch das Open API Postman genuntzt und für diese auch Integration Tests erstellt welche in .\documents\executables\integration_test_postman zu finden sind.
-Zudem wurde das CURL-Script mit einem "Enter Key to close program" versehen. Das CURL-Script ist in .\documents\executables zu finden.
+Ich habe in erster-Linie die Routen der Services ausgetestet und die zu erwartende Respons abgefragt. Dabei habe ich auch mittels der Unittests ein Integration Test geschrieben, welcher mit den verschiedenen Test mögliche Use-Cases testen kann.
+Während dem Entwickeln, wurde oft auch das Open API Postman genutzt und für diese auch Integration Tests erstellt welche in .\documents\executables\integration_test_postman zu finden sind.
+Zudem wurde das CURL-Script mit einem "Enter Key to close program" versehen. Das CURL-Script ist in ".\documents\executables" zu finden.
 Vor allem das Battle-Service ist kritisch und wurde deswegen mit einem Unittest abgefragt.
 
 ### Unique Feature
-Das eingebaute unique feature beinhaltet ein neues Service mit der Service-Route battlelogs. Dabei können zwei verschiedene GET-Requests abgefragt werde.
-Dieser Request benötigt einen gültigen Authentication-Token und braucht kein body;
+Das eingebaute Unique-Feature beinhaltet ein neues Service mit der Service-Route battlelogs. Dabei können zwei verschiedene GET-Requests abgefragt werde.
+Dieser Request benötigt einen gültigen Authentication-Token und braucht kein body, welcher mitgeschickt werden muss.
 
 ```
 GET /battlelogs
