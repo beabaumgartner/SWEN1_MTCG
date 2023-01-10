@@ -39,11 +39,13 @@ Vor allem das Battle-Service ist kritisch und wurde deswegen mit einem Unittest 
 ### Unique Feature
 Das eingebaute unique feature beinhaltet ein neues Service mit der Service-Route battlelogs. Dabei können zwei verschiedene GET-Requests abgefragt werde.
 Dieser Request benötigt einen gültigen Authentication-Token und braucht kein body;
+
 ```
 GET /battlelogs
 ```
+![](/documents/executables/integration_test_postman/images/battlelogs.PNG)
+
 <div style="float: right; width: 50%; margin-left: 4%; margin-top: -15px;">
-  <p><img width="460" src="/documents/executables/integration_test_postman/images/battlelogs.png" width="300px"/></p>
   <p> <br> </p>
 </div>
 <div tyle="float: right; width: 50%; margin-left: 4%;">
@@ -80,9 +82,8 @@ Code:404
 ```
 GET /battlelogs/{battlelog_id}
 ```
-
+![](/documents/executables/integration_test_postman/images/battlelogs_battlelog_id.PNG)
 <div style="float: right; width: 50%; margin-left: 4%; margin-top: -15px;">
-  <p><img width="460" src="/documents/executables/integration_test_postman/images/battlelogs_battlelog_id.png" width="300px"/></p>
   <p> <br> </p>
 </div>
 <div tyle="float: right; width: 50%; margin-left: 4%;">
