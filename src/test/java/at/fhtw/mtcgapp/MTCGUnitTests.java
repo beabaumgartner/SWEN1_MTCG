@@ -537,6 +537,40 @@ class MTCGUnitTests {
     }
     @Test
     @Order(24)
+    void testDeleateTradingDealWithWrongOwner() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.DELETE);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic bea-mtcgToken");
+        request.setPathname("/tradings/3fazf64-571f7-4562-b3fc-2c963f66afa6");
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("The deal contains a card that is not owned by the user.", response.getContent());
+        assertEquals(403, response.getStatus());
+    }
+    @Test
+    @Order(24)
+    void testDeleateTradingDeal() {
+        TradingService tradingService = new TradingService();
+        Request request = new Request();
+
+        request.setHeaderMap(new HeaderMap());
+        request.setMethod(Method.DELETE);
+        request.getHeaderMap().setAuthorizationTokenHeader("Basic simba-mtcgToken");
+        request.setPathname("/tradings/3fazf64-571f7-4562-b3fc-2c963f66afa6");
+
+
+        Response response = tradingService.handleRequest(request);
+
+        assertEquals("Trading deal successfully deleted", response.getContent());
+        assertEquals(200, response.getStatus());
+    }
+    @Test
+    @Order(24)
     void testBattleForUserAAndB() throws InterruptedException {
         Request request1 = new Request();
         Request request2 = new Request();

@@ -204,9 +204,9 @@ public class TradingController extends Controller {
             unitOfWork.rollbackTransaction();
             e.printStackTrace();
             return new Response(
-                    HttpStatus.CONFLICT,
+                    HttpStatus.FORBIDDEN,
                     ContentType.PLAIN_TEXT,
-                    "Trading-Deal could not be deleted"
+                    "The deal contains a card that is not owned by the user."
             );
         }
         catch (InvalidItemException e)
